@@ -65,8 +65,8 @@ double findmax_absl_from_chars(std::vector<std::string> s) {
   double answer = 0;
   double x = 0;
   for (std::string st : s) {
-    auto [p, ec] = absl::from_chars(st.data(), st.data() + st.size(), x);
-    if (p == st.data()) {
+    auto res = absl::from_chars(st.data(), st.data() + st.size(), x);
+    if (res.ptr == st.data()) {
       throw std::runtime_error("bug in findmax_absl_from_chars");
     }
     answer = answer > x ? answer : x;
