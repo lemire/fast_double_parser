@@ -22,11 +22,11 @@ If you want to run our benchmarks, you should have
 ## Usage (benchmarks)
 
 ```
-make
-./unit
-./benchmark
-./benchmark benchmarks/data/canada.txt
+make bench
 ```
+
+To run unit tests, type `make unit && ./unit`.
+
 ## Sample results
 
 

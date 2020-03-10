@@ -19,7 +19,9 @@ benchmark: ./benchmarks/benchmark.cpp $(headers) $(LIBABSEIL)  $(LIBDOUBLE) $(he
 unit: ./tests/unit.cpp $(headers) 
 	$(CXX) -O2 -std=c++17 -march=native -o unit ./tests/unit.cpp -Wall -Iinclude 
 
-
+bench: benchmark
+	./benchmark 
+	./benchmark benchmarks/data/canada.txt
 
 submodules:
 	-git submodule update --init --recursive
