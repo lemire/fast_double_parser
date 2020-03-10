@@ -1034,8 +1034,8 @@ const uint64_t mantissa_128[] = {0x419ea3bd35385e2d,
 // We assume that power is in the [FASTFLOAT_SMALLEST_POWER,
 // FASTFLOAT_LARGEST_POWER] interval: the caller is responsible for this check.
 // We assume that i is non-zero: the caller is responsible for this check.
-really_inline double compute_float_64(int64_t power, uint64_t i,
-                                             bool negative, bool *success) {
+really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
+                                      bool *success) {
   // we start with a fast path
   if (-22 <= power && power <= 22 && i <= 9007199254740991) {
     // convert the integer into a double. This is lossless since

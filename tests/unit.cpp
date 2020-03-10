@@ -1,24 +1,11 @@
 #include "fast_double_parser.h"
 
-//#include <algorithm>
-/*#include <chrono>
-#include <climits>
-#include <cmath>
-#include <cstdint>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <ctype.h>
-
-
-
-#include <stdio.h>
-#include <vector>*/
-#include <iomanip>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
+
 // ulp distance
 // Marc B. Reynolds, 2016-2019
 // Public Domain under http://unlicense.org, see link for details.
@@ -81,9 +68,9 @@ void check(double d) {
 
 void unit_tests() {
   printf("Running unit tests\n");
-  for (double d :
-       {-65.613616999999977, 7.2057594037927933e+16, 1.0e-308, 0.1e-308, 0.01e-307, 1.79769e+308,
-        2.22507e-308, -1.79769e+308, -2.22507e-308, 1e-308}) {
+  for (double d : {-65.613616999999977, 7.2057594037927933e+16, 1.0e-308,
+                   0.1e-308, 0.01e-307, 1.79769e+308, 2.22507e-308,
+                   -1.79769e+308, -2.22507e-308, 1e-308}) {
     check(d);
   }
   uint64_t offset = 1190;
@@ -203,8 +190,6 @@ int main() {
       return EXIT_FAILURE;
     }
   }
-
-  // double last_normal =std::numeric_limits<double>::min();// 2.22507e-308;
 
   printf("Good!\n");
   return EXIT_SUCCESS;
