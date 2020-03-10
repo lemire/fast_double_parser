@@ -7,6 +7,14 @@ Parsing strings into binary numbers (IEEE 754) is surprisingly difficult. Parsin
 
 Instead of trying to solve the general problem, we cover what we believe are the most common scenarios, providing really fast parsing. We fall back on the standard library for the difficult cases. We believe that, in this manner, we achieve the best performance on the most important cases. 
 
+
+
+| parser                                | MB/s |
+| ------------------------------------- | ---- |
+| fast_double_parser                    | 660 MB/s  |
+| abseil, from_chars                    | 190 MB/s |
+| double_conversion                     | 200 MB/s |
+
 We expect string numbers to follow [RFC 7159](https://tools.ietf.org/html/rfc7159).
 
 ## Requirements
