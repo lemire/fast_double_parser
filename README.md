@@ -15,6 +15,7 @@ We have benchmarked our parser on a collection of strings from a sample geojson 
 | fast_double_parser                    | 660 MB/s  |
 | abseil, from_chars                    | 330 MB/s |
 | double_conversion                     | 250 MB/s |
+| strtod                    | 70 MB/s |
 
 (configuration: Apple clang version 11.0.0, I7-7700K)
 
