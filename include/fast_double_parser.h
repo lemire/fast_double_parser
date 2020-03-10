@@ -18,17 +18,18 @@ namespace fast_double_parser {
 #ifdef _MSC_VER
 #ifndef really_inline
 #define really_inline __forceinline
-#endif
+#endif // really_inline
 #ifndef unlikely
 #define unlikely(x) x
-#endif
-#else
+#endif // unlikely
+#else  // _MSC_VER
 #ifndef unlikely
 #define unlikely(x) __builtin_expect(!!(x), 0)
-#endif
+#endif // unlikely
 #ifndef really_inline
 #define really_inline __attribute__((always_inline))
-#endif
+#endif // really_inline
+#endif // _MSC_VER
 
 /* result might be undefined when input_num is zero */
 int leading_zeroes(uint64_t input_num) {
@@ -45,22 +46,16 @@ int leading_zeroes(uint64_t input_num) {
 #endif // _MSC_VER
 }
 
-
 // Precomputed powers of ten from 10^0 to 10^22. These
 // can be represented exactly using the double type.
 static const double power_of_ten[] = {
     1e0,  1e1,  1e2,  1e3,  1e4,  1e5,  1e6,  1e7,  1e8,  1e9,  1e10, 1e11,
     1e12, 1e13, 1e14, 1e15, 1e16, 1e17, 1e18, 1e19, 1e20, 1e21, 1e22};
 
-
-}
-
 static inline bool is_integer(char c) {
   return (c >= '0' && c <= '9');
   // this gets compiled to (uint8_t)(c - '0') <= 9 on all decent compilers
 }
-
-
 
 // the mantissas of powers of ten from -308 to 308, extended out to sixty four
 // bits
@@ -1039,7 +1034,7 @@ const uint64_t mantissa_128[] = {0x419ea3bd35385e2d,
 // We assume that power is in the [FASTFLOAT_SMALLEST_POWER,
 // FASTFLOAT_LARGEST_POWER] interval: the caller is responsible for this check.
 // We assume that i is non-zero: the caller is responsible for this check.
-static really_inline double compute_float_64(int64_t power, uint64_t i,
+really_inline double compute_float_64(int64_t power, uint64_t i,
                                              bool negative, bool *success) {
   // we start with a fast path
   if (-22 <= power && power <= 22 && i <= 9007199254740991) {
@@ -1161,10 +1156,8 @@ static really_inline double compute_float_64(int64_t power, uint64_t i,
   return d;
 }
 
-static bool parse_float_strtod(const uint8_t *const buf, const uint32_t offset,
-                               const char *float_end, double *outDouble) {
+static bool parse_float_strtod(const char *ptr, double *outDouble) {
   char *endptr;
-  char *ptr = (char *)(buf + offset);
   *outDouble = strtod(ptr, &endptr);
   // Some libraries will set errno = ERANGE when the value is subnormal,
   // yet we may want to be able to parse subnormal values.
@@ -1196,10 +1189,9 @@ is_not_structural_or_whitespace_or_exponent_or_decimal(unsigned char c) {
   return structural_or_whitespace_or_exponent_or_decimal_negated[c];
 }
 
-
 // parse the number at p
-really_inline bool parse_number(const char *p,  double *outDouble) {
-  const char *p = reinterpret_cast<const char *>(buf + offset);
+really_inline bool parse_number(const char *p, double *outDouble) {
+  const char *pinit = p;
   bool found_minus = (*p == '-');
   bool negative = false;
   if (found_minus) {
@@ -1296,38 +1288,40 @@ really_inline bool parse_number(const char *p,  double *outDouble) {
     }
     exponent += (neg_exp ? -exp_number : exp_number);
   }
-    if (unlikely((digit_count >= 19))) { // this is uncommon
-      // It is possible that the integer had an overflow.
-      // We have to handle the case where we have 0.0000somenumber.
-      const char *start = start_digits;
-      while ((*start == '0') || (*start == '.')) {
-        start++;
-      }
-      // we over-decrement by one when there is a '.'
-      digit_count -= (start - start_digits);
-      if (digit_count >= 19) {
-        return parse_float_strtod(buf, offset, p, outDouble);
-      }
+  if (unlikely((digit_count >= 19))) { // this is uncommon
+    // It is possible that the integer had an overflow.
+    // We have to handle the case where we have 0.0000somenumber.
+    const char *start = start_digits;
+    while ((*start == '0') || (*start == '.')) {
+      start++;
     }
-    if (unlikely(exponent < FASTFLOAT_SMALLEST_POWER) ||
-        (exponent > FASTFLOAT_LARGEST_POWER)) {
-      // this is almost never going to get called!!!
-      // exponent could be as low as 325
-      return parse_float_strtod(buf, offset, p, outDouble);
+    // we over-decrement by one when there is a '.'
+    digit_count -= (start - start_digits);
+    if (digit_count >= 19) {
+      return parse_float_strtod(pinit, outDouble);
     }
-    // from this point forward, exponent >= FASTFLOAT_SMALLEST_POWER and
-    // exponent <= FASTFLOAT_LARGEST_POWER
-    double d = 0;
-    if (likely(i != 0)) {
-      bool success = true;
-      d = compute_float_64(exponent, i, negative, &success);
-      if (!success) {
-        // we are almost never going to get here.
-        return parse_float_strtod(buf, offset, p, outDouble);
-      }
+  }
+  if (unlikely(exponent < FASTFLOAT_SMALLEST_POWER) ||
+      (exponent > FASTFLOAT_LARGEST_POWER)) {
+    // this is almost never going to get called!!!
+    // exponent could be as low as 325
+    return parse_float_strtod(pinit, outDouble);
+  }
+  // from this point forward, exponent >= FASTFLOAT_SMALLEST_POWER and
+  // exponent <= FASTFLOAT_LARGEST_POWER
+  double d = 0;
+  if (i != 0) {
+    bool success = true;
+    d = compute_float_64(exponent, i, negative, &success);
+    if (!success) {
+      // we are almost never going to get here.
+      return parse_float_strtod(pinit, outDouble);
     }
-    *outDouble = d;
+  }
+  *outDouble = d;
   return true;
 }
+
+} // namespace fast_double_parser
 
 #endif
