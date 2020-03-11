@@ -1,5 +1,5 @@
 # fast_double_parser
-Fast function to parse strings containing decimal numbers into double-precision (binary64) floating-point values.  That is, given the string "1.0e10", it should return a 64-bit floating-point value equal to 10. We do not sacrifice accuracy. The function will match exactly (down the smallest bit) the result of a standard function like strtod.
+Fast function to parse strings containing decimal numbers into double-precision (binary64) floating-point values.  That is, given the string "1.0e10", it should return a 64-bit floating-point value equal to 100. We do not sacrifice accuracy. The function will match exactly (down the smallest bit) the result of a standard function like strtod.
 
 ## Why should I expect this function to be faster?
 
