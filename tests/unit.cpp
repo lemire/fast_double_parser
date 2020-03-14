@@ -190,6 +190,23 @@ int main() {
       return EXIT_FAILURE;
     }
   }
+  for (int p = -306; p <= 308; p++) {
+    double d;
+    std::string s = "1e"+std::to_string(p);
+    std::cout << "parsing " << s << std::endl;
+    bool isok = fast_double_parser::parse_number(s.data(), &d);
+    if (!isok) {
+      printf("fast_double_parser refused to parse %s\n", s.c_str());
+      throw std::runtime_error("fast_double_parser refused to parse");
+    }
+    if (d != testing_power_of_ten[p + 307]) {
+      std::cerr << "fast_double_parser disagrees" << std::endl;
+      printf("fast_double_parser: %.*e\n", DBL_DIG + 1, d);
+      printf("reference: %.*e\n", DBL_DIG + 1, testing_power_of_ten[p + 307]);
+      printf("string: %s\n", s.c_str());
+      throw std::runtime_error("fast_double_parser disagrees");
+    }
+  }
 
   printf("Good!\n");
   return EXIT_SUCCESS;
