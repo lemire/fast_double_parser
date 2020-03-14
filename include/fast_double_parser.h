@@ -31,6 +31,24 @@ namespace fast_double_parser {
 #endif // really_inline
 #endif // _MSC_VER
 
+struct value128 {
+  uint64_t low;
+  uint64_t high;
+};
+
+value128 full_multiplication(uint64_t value1, uint64_t value2) {
+  value128 answer;
+#ifdef _MSC_VER
+  // todo: this might fail under visual studio for ARM
+  answer.low = _umul128(value1, value2, &answer.high);
+#else
+  __uint128_t r = ((__uint128_t) value1) * value2;
+  answer.low = r;
+  answer.high = r >> 64;
+#endif
+  return answer;
+}
+
 /* result might be undefined when input_num is zero */
 int leading_zeroes(uint64_t input_num) {
 #ifdef _MSC_VER
@@ -1077,9 +1095,9 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // We want the most significant 64 bits of the product. We know
   // this will be non-zero because the most significant bit of i is
   // 1.
-
-  uint64_t lower = i * factor_mantissa;
-  uint64_t upper = ((__uint128_t)i * factor_mantissa) >> 64;
+  value128 product = full_multiplication(i,factor_mantissa);
+  uint64_t lower = product.low;
+  uint64_t upper = product.high;
 
   // We know that upper has at most one leading zero because
   // both i and  factor_mantissa have a leading one. This means
@@ -1094,8 +1112,9 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
         mantissa_128[power - FASTFLOAT_SMALLEST_POWER];
     // next, we compute the 64-bit x 128-bit multiplication, getting a 192-bit
     // result (three 64-bit values)
-    uint64_t product_low = i * factor_mantissa_low;
-    uint64_t product_middle2 = ((__uint128_t)i * factor_mantissa_low) >> 64;
+    product = full_multiplication(i,factor_mantissa_low);
+    uint64_t product_low = product.low;
+    uint64_t product_middle2 = product.high;
     uint64_t product_middle1 = lower;
     uint64_t product_high = upper;
     uint64_t product_middle = product_middle1 + product_middle2;
