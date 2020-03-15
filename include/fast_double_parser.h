@@ -1096,7 +1096,6 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // also used in RapidJSON: https://rapidjson.org/strtod_8h_source.html
 
 
-  
   // In the slow path, we need to adjust i so that it is > 1<<63 which is always
   // possible, except if i == 0, so we handle i == 0 separately.
   if(i == 0) {
@@ -1341,6 +1340,9 @@ really_inline bool parse_number(const char *p, double *outDouble) {
     }
     exponent += (neg_exp ? -exp_number : exp_number);
   }
+  // If we frequently had to deal with long strings of digits,
+  // we could extend our code by using a 128-bit integer instead
+  // of a 64-bit integer. However, this is uncommon in JSON.
   if (unlikely((digit_count >= 19))) { // this is uncommon
     // It is possible that the integer had an overflow.
     // We have to handle the case where we have 0.0000somenumber.
@@ -1351,6 +1353,12 @@ really_inline bool parse_number(const char *p, double *outDouble) {
     // we over-decrement by one when there is a '.'
     digit_count -= (start - start_digits);
     if (digit_count >= 19) {
+      // Chances are good that we had an overflow!
+      // We start anew.
+      // This will happen in the following examples:
+      // 10000000000000000000000000000000000000000000e+308
+      // 3.1415926535897932384626433832795028841971693993751
+      //
       return parse_float_strtod(pinit, outDouble);
     }
   }
