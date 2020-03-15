@@ -1166,7 +1166,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // We have to round to even. The "to even" part
   // is only a problem when we are right in between two floats
   // which we guard against.
-  // If we have lots of trailing zeros so we may fall right between two
+  // If we have lots of trailing zeros, we may fall right between two
   // floating-point values.
   if (unlikely((lower == 0) && ((upper & 0x1FF) == 0) &&
                ((mantissa & 1) == 1))) {
@@ -1342,7 +1342,7 @@ really_inline bool parse_number(const char *p, double *outDouble) {
   }
   // If we frequently had to deal with long strings of digits,
   // we could extend our code by using a 128-bit integer instead
-  // of a 64-bit integer. However, this is uncommon in JSON.
+  // of a 64-bit integer. However, this is uncommon.
   if (unlikely((digit_count >= 19))) { // this is uncommon
     // It is possible that the integer had an overflow.
     // We have to handle the case where we have 0.0000somenumber.
