@@ -1080,6 +1080,21 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
     *success = true;
     return d;
   }
+  // When 22 < power && power <  22 + 16, we could
+  // hope for another, secondary fast path.  If
+  // you need to compute i * 10^(22 + x) for x < 16,
+  // first compute i * 10^x, if you know that result is exact
+  // (e.g., when i * 10^x < 2^53),
+  // then you can still proceed and do (i * 10^x) * 10^22.
+  // Is this worth your time?
+  // You need  22 < power *and* power <  22 + 16 *and* (i * 10^(x-22) < 2^53)
+  // for this second fast path to work.
+  // If you you have 22 < power *and* power <  22 + 16, and then you optimistically
+  // compute "i * 10^(x-22)", there is still a chance that you have wasted your
+  // time if i * 10^(x-22) >= 2^53. It makes the use cases of this optimization
+  // maybe less common than we would like.
+  // Source: http://www.exploringbinary.com/fast-path-decimal-to-floating-point-conversion/
+  // also used in RapidJSON: https://rapidjson.org/strtod_8h_source.html
 
   components c =
       power_of_ten_components[power - FASTFLOAT_SMALLEST_POWER]; // safe because
@@ -1107,6 +1122,9 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // know that we have an exact computed value for the leading
   // 55 bits because any imprecision would play out as a +1, in
   // the worst case.
+  // We expect this next branch to be rarely taken (say 1% of the time).
+  // When (upper & 0x1FF) == 0x1FF, it can be common for
+  // lower + i < lower to be true (proba. much higher than 1%).
   if (unlikely((upper & 0x1FF) == 0x1FF) && (lower + i < lower)) {
     uint64_t factor_mantissa_low =
         mantissa_128[power - FASTFLOAT_SMALLEST_POWER];
@@ -1181,6 +1199,15 @@ static bool parse_float_strtod(const char *ptr, double *outDouble) {
   // Some libraries will set errno = ERANGE when the value is subnormal,
   // yet we may want to be able to parse subnormal values.
   // However, we do not want to tolerate NAN or infinite values.
+  // There isno realistic application where you might need values so large than they
+  // can't fit in binary64. The maximal value is about  1.7976931348623157 × 10^308
+  // It is an unimaginable large number. There will never be any piece of engineering
+  // involving as many as 10^308 parts.
+  // It is estimated that there are about 10^80 atoms in the universe.
+  // The estimate for the total number of electrons is similar.
+  // Using a double-precision floating-point value, we can represent easily the number of
+  // atoms in the universe. We could  also represent the number of ways you can pick
+  // any three individual atoms at random in the universe.
   if ((endptr == ptr) || (!std::isfinite(*outDouble))) {
     return false;
   }
