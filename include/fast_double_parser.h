@@ -1053,6 +1053,7 @@ const uint64_t mantissa_128[] = {0x419ea3bd35385e2d,
 // FASTFLOAT_LARGEST_POWER] interval: the caller is responsible for this check.
 really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
                                       bool *success) {
+
   // we start with a fast path
   if (-22 <= power && power <= 22 && i <= 9007199254740991) {
     // convert the integer into a double. This is lossless since
@@ -1109,7 +1110,6 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // we recover the mantissa of the power, it has a leading 1. It is always
   // rounded down.
   uint64_t factor_mantissa = c.mantissa;
-
   // We want the most significant bit of i to be 1. Shift if needed.
   int lz = leading_zeroes(i);
   i <<= lz;
@@ -1119,7 +1119,6 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   value128 product = full_multiplication(i, factor_mantissa);
   uint64_t lower = product.low;
   uint64_t upper = product.high;
-
   // We know that upper has at most one leading zero because
   // both i and  factor_mantissa have a leading one. This means
   // that the result is at least as large as ((1<<63)*(1<<63))/(1<<64).
@@ -1160,7 +1159,6 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   uint64_t upperbit = upper >> 63;
   uint64_t mantissa = upper >> (upperbit + 9);
   lz += 1 ^ upperbit;
-
   // Here we have mantissa < (1<<54).
 
   // We have to round to even. The "to even" part
@@ -1170,12 +1168,28 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // floating-point values.
   if (unlikely((lower == 0) && ((upper & 0x1FF) == 0) &&
                ((mantissa & 1) == 1))) {
-    // It can be triggered with 1e23.
-    *success = false;
-    return 0;
+    if((mantissa & 2) == 2) {
+      // Scenarios:
+      // 1. We are not in the middle. Then we should round up.
+      //
+      // 2. We are right in the middle. Whether we round up depends
+      // on the last significant bit: if it is "one" then we round
+      // up (round to even) otherwise, we do not.
+      //
+      // So if the last significant bit is 1, we can safely round up.
+      mantissa += mantissa & 1;
+      mantissa >>= 1;
+    } else {
+      // We may need more accuracy or analysis to determine whether
+      // we are exactly between two floating-point numbers.
+      // It can be triggered with 1e23.
+      *success = false;
+      return 0;
+    }
+  } else {
+    mantissa += mantissa & 1;
+    mantissa >>= 1;
   }
-  mantissa += mantissa & 1;
-  mantissa >>= 1;
   // Here we have mantissa < (1<<53), unless there was an overflow
   if (mantissa >= (1ULL << 53)) {
     //////////

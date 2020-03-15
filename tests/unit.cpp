@@ -66,8 +66,29 @@ void check(double d) {
   }
 }
 
+void check_string(std::string s) {
+  double x;
+  bool isok = fast_double_parser::parse_number(s.data(), &x);
+  if (!isok) {
+    printf("fast_double_parser refused to parse %s\n", s.c_str());
+    throw std::runtime_error("fast_double_parser refused to parse");
+  }
+  double d = strtod(s.data(), NULL);
+  if (d != x) {
+    std::cerr << "fast_double_parser disagrees" << std::endl;
+    printf("fast_double_parser: %.*e\n", DBL_DIG + 1, x);
+    printf("reference: %.*e\n", DBL_DIG + 1, d);
+    printf("string: %s\n", s.c_str());
+    printf("f64_ulp_dist = %d\n", (int)f64_ulp_dist(x, d));
+    throw std::runtime_error("fast_double_parser disagrees");
+  }
+}
+
+
 void unit_tests() {
-  printf("Running unit tests\n");
+  for (std::string s : {"1e23", "9007199254740995","7e23"}) {
+    check_string(s);
+  }
   for (double d : {-65.613616999999977, 7.2057594037927933e+16, 1.0e-308,
                    0.1e-308, 0.01e-307, 1.79769e+308, 2.22507e-308,
                    -1.79769e+308, -2.22507e-308, 1e-308}) {
