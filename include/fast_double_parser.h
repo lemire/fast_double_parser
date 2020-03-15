@@ -1355,16 +1355,12 @@ really_inline bool parse_number(const char *p, double *outDouble) {
   }
   // from this point forward, exponent >= FASTFLOAT_SMALLEST_POWER and
   // exponent <= FASTFLOAT_LARGEST_POWER
-  double d = 0;
-  if (i != 0) {
-    bool success = true;
-    d = compute_float_64(exponent, i, negative, &success);
-    if (!success) {
-      // we are almost never going to get here.
-      return parse_float_strtod(pinit, outDouble);
-    }
+  bool success = true;
+  *outDouble = compute_float_64(exponent, i, negative, &success);
+  if (!success) {
+    // we are almost never going to get here.
+    return parse_float_strtod(pinit, outDouble);
   }
-  *outDouble = d;
   return true;
 }
 
