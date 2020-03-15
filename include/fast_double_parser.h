@@ -42,7 +42,7 @@ value128 full_multiplication(uint64_t value1, uint64_t value2) {
   // todo: this might fail under visual studio for ARM
   answer.low = _umul128(value1, value2, &answer.high);
 #else
-  __uint128_t r = ((__uint128_t) value1) * value2;
+  __uint128_t r = ((__uint128_t)value1) * value2;
   answer.low = r;
   answer.high = r >> 64;
 #endif
@@ -1089,11 +1089,11 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // Is this worth your time?
   // You need  22 < power *and* power <  22 + 16 *and* (i * 10^(x-22) < 2^53)
   // for this second fast path to work.
-  // If you you have 22 < power *and* power <  22 + 16, and then you optimistically
-  // compute "i * 10^(x-22)", there is still a chance that you have wasted your
-  // time if i * 10^(x-22) >= 2^53. It makes the use cases of this optimization
-  // maybe less common than we would like.
-  // Source: http://www.exploringbinary.com/fast-path-decimal-to-floating-point-conversion/
+  // If you you have 22 < power *and* power <  22 + 16, and then you
+  // optimistically compute "i * 10^(x-22)", there is still a chance that you
+  // have wasted your time if i * 10^(x-22) >= 2^53. It makes the use cases of
+  // this optimization maybe less common than we would like. Source:
+  // http://www.exploringbinary.com/fast-path-decimal-to-floating-point-conversion/
   // also used in RapidJSON: https://rapidjson.org/strtod_8h_source.html
 
   components c =
@@ -1110,7 +1110,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // We want the most significant 64 bits of the product. We know
   // this will be non-zero because the most significant bit of i is
   // 1.
-  value128 product = full_multiplication(i,factor_mantissa);
+  value128 product = full_multiplication(i, factor_mantissa);
   uint64_t lower = product.low;
   uint64_t upper = product.high;
 
@@ -1130,7 +1130,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
         mantissa_128[power - FASTFLOAT_SMALLEST_POWER];
     // next, we compute the 64-bit x 128-bit multiplication, getting a 192-bit
     // result (three 64-bit values)
-    product = full_multiplication(i,factor_mantissa_low);
+    product = full_multiplication(i, factor_mantissa_low);
     uint64_t product_low = product.low;
     uint64_t product_middle2 = product.high;
     uint64_t product_middle1 = lower;
@@ -1199,15 +1199,15 @@ static bool parse_float_strtod(const char *ptr, double *outDouble) {
   // Some libraries will set errno = ERANGE when the value is subnormal,
   // yet we may want to be able to parse subnormal values.
   // However, we do not want to tolerate NAN or infinite values.
-  // There isno realistic application where you might need values so large than they
-  // can't fit in binary64. The maximal value is about  1.7976931348623157 × 10^308
-  // It is an unimaginable large number. There will never be any piece of engineering
-  // involving as many as 10^308 parts.
-  // It is estimated that there are about 10^80 atoms in the universe.
-  // The estimate for the total number of electrons is similar.
-  // Using a double-precision floating-point value, we can represent easily the number of
-  // atoms in the universe. We could  also represent the number of ways you can pick
-  // any three individual atoms at random in the universe.
+  // There isno realistic application where you might need values so large than
+  // they can't fit in binary64. The maximal value is about  1.7976931348623157
+  // × 10^308 It is an unimaginable large number. There will never be any piece
+  // of engineering involving as many as 10^308 parts. It is estimated that
+  // there are about 10^80 atoms in the universe. The estimate for the total
+  // number of electrons is similar. Using a double-precision floating-point
+  // value, we can represent easily the number of atoms in the universe. We
+  // could  also represent the number of ways you can pick any three individual
+  // atoms at random in the universe.
   if ((endptr == ptr) || (!std::isfinite(*outDouble))) {
     return false;
   }
