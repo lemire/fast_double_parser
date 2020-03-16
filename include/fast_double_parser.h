@@ -1135,7 +1135,11 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // We expect this next branch to be rarely taken (say 1% of the time).
   // When (upper & 0x1FF) == 0x1FF, it can be common for
   // lower + i < lower to be true (proba. much higher than 1%).
-  if (unlikely((upper & 0x1FF) == 0x1FF) && (lower + i < lower)) {
+  //
+  // There are cases where we *know* that factor_mantissa is
+  // exact, because  5**27 < 2**64
+  bool exact_mantissa = (power >= 0) && (power <= 27);
+  if (unlikely((!exact_mantissa) && ((upper & 0x1FF) == 0x1FF) && (lower + i < lower))) {
     uint64_t factor_mantissa_low =
         mantissa_128[power - FASTFLOAT_SMALLEST_POWER];
     // next, we compute the 64-bit x 128-bit multiplication, getting a 192-bit
@@ -1149,9 +1153,12 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
     if (product_middle < product_middle1) {
       product_high++; // overflow carry
     }
+    // There are cases where we *know* that factor_mantissa is
+    // exact, because 5**55 < 2**128
+    exact_mantissa = (power >= 0) && (power <= 55);
     // we want to check whether mantissa *i + i would affect our result
     // This does happen, e.g. with 7.3177701707893310e+15
-    if (((product_middle + 1 == 0) && ((product_high & 0x1FF) == 0x1FF) &&
+    if (((!exact_mantissa) && (product_middle + 1 == 0) && ((product_high & 0x1FF) == 0x1FF) &&
          (product_low + i < product_low))) { // let us be prudent and bail out.
       *success = false;
       return 0;
