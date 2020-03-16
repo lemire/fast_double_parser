@@ -19,7 +19,9 @@ We have benchmarked our parser on a collection of strings from a sample geojson 
 
 (configuration: Apple clang version 11.0.0, I7-7700K)
 
-We expect string numbers to follow [RFC 7159](https://tools.ietf.org/html/rfc7159).
+We expect string numbers to follow [RFC 7159](https://tools.ietf.org/html/rfc7159). In particular,
+the parser will reject overly large values that would not fit in binary64. It will not produce
+NaN or infinite values.
 
 ## Requirements
 
