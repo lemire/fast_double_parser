@@ -86,7 +86,7 @@ void check_string(std::string s) {
 
 
 void unit_tests() {
-  for (std::string s : {"1e23", "9007199254740995","7e23"}) {
+  for (std::string s : {"7.3177701707893310e+15","1e23", "9007199254740995","7e23"}) {
     check_string(s);
   }
   for (double d : {-65.613616999999977, 7.2057594037927933e+16, 1.0e-308,
