@@ -75,7 +75,7 @@ static inline bool is_integer(char c) {
   // this gets compiled to (uint8_t)(c - '0') <= 9 on all decent compilers
 }
 
-// the mantissas of powers of ten from -308 to 308, extended out to sixty four
+// the mantissas of powers of ten from FASTFLOAT_SMALLEST_POWER to FASTFLOAT_LARGEST_POWER, extended out to sixty four
 // bits
 // This struct will likely get padded to 16 bytes.
 typedef struct {
@@ -1115,8 +1115,8 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // We use a table lookup approach.
   components c =
       power_of_ten_components[power - FASTFLOAT_SMALLEST_POWER]; // safe because
-                                                                 // power_index
-                                                                 // <= 2*308
+                                                                 // power >= FASTFLOAT_SMALLEST_POWER
+                                                                 // and power <= FASTFLOAT_LARGEST_POWER
   // we recover the mantissa of the power, it has a leading 1. It is always
   // rounded down.
   uint64_t factor_mantissa = c.mantissa;
