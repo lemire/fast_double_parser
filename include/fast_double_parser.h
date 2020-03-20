@@ -1110,7 +1110,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   if(i == 0) {
     return 0.0;
   }
-  
+
   // We are going to need to do some 64-bit arithmetic to get a more precise product.
   // We use a table lookup approach.
   components c =
@@ -1267,7 +1267,8 @@ is_not_structural_or_whitespace_or_exponent_or_decimal(unsigned char c) {
 }
 
 // parse the number at p
-really_inline bool parse_number(const char *p, double *outDouble) {
+template <char... DecSeparators>
+really_inline bool parse_number_base(const char *p, double *outDouble) {
   const char *pinit = p;
   bool found_minus = (*p == '-');
   bool negative = false;
@@ -1306,7 +1307,7 @@ really_inline bool parse_number(const char *p, double *outDouble) {
   }
   int64_t exponent = 0;
   const char *first_after_period = NULL;
-  if ('.' == *p) {
+  if (((*p == DecSeparators) || ...)) {
     ++p;
     first_after_period = p;
     if (is_integer(*p)) {
@@ -1372,10 +1373,10 @@ really_inline bool parse_number(const char *p, double *outDouble) {
     // It is possible that the integer had an overflow.
     // We have to handle the case where we have 0.0000somenumber.
     const char *start = start_digits;
-    while ((*start == '0') || (*start == '.')) {
+    while ((*start == '0') || ((*start == DecSeparators) || ...)) {
       start++;
     }
-    // we over-decrement by one when there is a '.'
+    // we over-decrement by one when there is a decimal separator
     digit_count -= (start - start_digits);
     if (digit_count >= 19) {
       // Chances are good that we had an overflow!
@@ -1402,6 +1403,18 @@ really_inline bool parse_number(const char *p, double *outDouble) {
     return parse_float_strtod(pinit, outDouble);
   }
   return true;
+}
+
+const auto parse_number = parse_number_base<'.', ','>;
+
+namespace decimal_separator_dot
+{
+  const auto parse_number = parse_number_base<'.'>;
+}
+
+namespace decimal_separator_comma
+{
+  const auto parse_number = parse_number_base<','>;
 }
 
 } // namespace fast_double_parser
