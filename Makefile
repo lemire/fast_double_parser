@@ -19,6 +19,9 @@ benchmark: ./benchmarks/benchmark.cpp $(headers) $(LIBABSEIL)  $(LIBDOUBLE) $(he
 unit: ./tests/unit.cpp $(headers) 
 	$(CXX) -O2 -std=c++14 -march=native -o unit ./tests/unit.cpp -Wall -Iinclude 
 
+stats: ./tests/stats.cpp $(headers) 
+	$(CXX) -O2 -std=c++14 -march=native -o stats ./tests/stats.cpp -Wall -Iinclude 
+
 bench: benchmark
 	./benchmark 
 	./benchmark benchmarks/data/canada.txt
