@@ -1245,6 +1245,36 @@ static bool parse_float_strtod(const char *ptr, double *outDouble) {
   return true;
 }
 
+#if ( __cplusplus < 201703L )
+template <char First, char... Rest>
+struct one_of_impl
+{
+  really_inline static bool call(char v)
+  {
+    return First == v || one_of_impl<Rest...>::call(v);
+  }
+};
+template<char First>
+struct one_of_impl<First>
+{
+  really_inline static bool call(char v)
+  {
+    return First == v;
+  }
+};
+template <char... Values>
+really_inline bool is_one_of(char v)
+{
+  return one_of_impl<Values...>::call(v);
+}
+#else
+template <char... Values>
+bool is_one_of(char v)
+{
+  return ((v == Values) || ...);
+}
+#endif
+
 // We need to check that the character following a zero is valid. This is
 // probably frequent and it is hard than it looks. We are building all of this
 // just to differentiate between 0x1 (invalid), 0,1 (valid) 0e1 (valid)...
@@ -1307,7 +1337,7 @@ really_inline bool parse_number_base(const char *p, double *outDouble) {
   }
   int64_t exponent = 0;
   const char *first_after_period = NULL;
-  if (((*p == DecSeparators) || ...)) {
+  if (is_one_of<DecSeparators...>(*p)) {
     ++p;
     first_after_period = p;
     if (is_integer(*p)) {
@@ -1373,7 +1403,7 @@ really_inline bool parse_number_base(const char *p, double *outDouble) {
     // It is possible that the integer had an overflow.
     // We have to handle the case where we have 0.0000somenumber.
     const char *start = start_digits;
-    while ((*start == '0') || ((*start == DecSeparators) || ...)) {
+    while (*start == '0' || is_one_of<DecSeparators...>(*start)) {
       start++;
     }
     // we over-decrement by one when there is a decimal separator
