@@ -30,3 +30,16 @@
 *.exe
 *.out
 *.app
+
+# Make output
+/benchmark
+/unit
+
+# QtCreator generic project
+/fast_double_parser.cflags
+/fast_double_parser.config
+/fast_double_parser.creator
+/fast_double_parser.creator.user
+/fast_double_parser.cxxflags
+/fast_double_parser.files
+/fast_double_parser.includes
