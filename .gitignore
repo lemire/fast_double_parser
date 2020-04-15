@@ -34,6 +34,7 @@
 # Make output
 /benchmark
 /unit
+/build
 
 # QtCreator generic project
 /fast_double_parser.cflags
