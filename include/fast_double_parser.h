@@ -10,6 +10,10 @@
 #include <cstdlib>
 #include <cstring>
 
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
+
 namespace fast_double_parser {
 
 #define FASTFLOAT_SMALLEST_POWER -325
