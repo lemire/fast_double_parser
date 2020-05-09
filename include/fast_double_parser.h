@@ -31,7 +31,7 @@ namespace fast_double_parser {
 #define unlikely(x) __builtin_expect(!!(x), 0)
 #endif // unlikely
 #ifndef really_inline
-#define really_inline __attribute__((always_inline))
+#define really_inline __attribute__((always_inline)) inline
 #endif // really_inline
 #endif // _MSC_VER
 
