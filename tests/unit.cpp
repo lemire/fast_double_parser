@@ -190,9 +190,10 @@ static const double testing_power_of_ten[] = {
 void issue13() {
   std::string a = "0";
   double x;
-  fast_double_parser::parse_number(a.c_str(), &x);
+  bool ok = fast_double_parser::parse_number(a.c_str(), &x);
+  if(!ok) throw std::runtime_error("could not parse zero.");
   if(x != 0) throw std::runtime_error("zero does not map to zero.");
-  std::cout << " zero maps to zero [!!!] " << std::endl;
+  std::cout << "zero maps to zero" << std::endl;
 }
 
 int main() {
