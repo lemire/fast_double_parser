@@ -152,7 +152,7 @@ int parse_number_stats(const char *p) {
   if (*p == '0') { // 0 cannot be followed by an integer
     ++p;
     if (fast_double_parser::
-            is_not_structural_or_whitespace_or_exponent_or_decimal(*p)) {
+            is_integer(*p)) {
       return false;
     }
     i = 0;
