@@ -12,6 +12,9 @@
 
 #ifdef _MSC_VER
 #include <intrin.h>
+#define WARN_UNUSED
+#else
+#define WARN_UNUSED __attribute__((warn_unused_result))
 #endif
 
 namespace fast_double_parser {
@@ -1279,29 +1282,10 @@ bool is_one_of(char v)
 }
 #endif
 
-// We need to check that the character following a zero is valid. This is
-// probably frequent and it is hard than it looks. We are building all of this
-// just to differentiate between 0x1 (invalid), 0,1 (valid) 0e1 (valid)...
-const bool structural_or_whitespace_or_exponent_or_decimal_negated[256] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1,
-    1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-
-really_inline bool
-is_not_structural_or_whitespace_or_exponent_or_decimal(unsigned char c) {
-  return structural_or_whitespace_or_exponent_or_decimal_negated[c];
-}
 
 // parse the number at p
 template <char... DecSeparators>
+WARN_UNUSED
 really_inline bool parse_number_base(const char *p, double *outDouble) {
   const char *pinit = p;
   bool found_minus = (*p == '-');
@@ -1318,7 +1302,7 @@ really_inline bool parse_number_base(const char *p, double *outDouble) {
   uint64_t i;      // an unsigned int avoids signed overflows (which are bad)
   if (*p == '0') { // 0 cannot be followed by an integer
     ++p;
-    if (is_not_structural_or_whitespace_or_exponent_or_decimal(*p)) {
+    if (is_integer(*p)) {
       return false;
     }
     i = 0;
@@ -1439,16 +1423,19 @@ really_inline bool parse_number_base(const char *p, double *outDouble) {
   return true;
 }
 
-const auto parse_number = parse_number_base<'.', ','>;
+typedef bool (*parser_function_t)(const char *p, double *outDouble);
+
+
+constexpr parser_function_t parse_number WARN_UNUSED = parse_number_base<'.', ','>;
 
 namespace decimal_separator_dot
 {
-  const auto parse_number = parse_number_base<'.'>;
+  constexpr parser_function_t parse_number WARN_UNUSED = parse_number_base<'.'>;
 }
 
 namespace decimal_separator_comma
 {
-  const auto parse_number = parse_number_base<','>;
+  constexpr parser_function_t parse_number WARN_UNUSED = parse_number_base<','>;
 }
 
 } // namespace fast_double_parser
