@@ -1068,7 +1068,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   if (-22 <= power && power <= 22 && i <= 9007199254740991) {
     // convert the integer into a double. This is lossless since
     // 0 <= i <= 2^53 - 1.
-    double d = i;
+    double d = double(i);
     //
     // The general idea is as follows.
     // If 0 <= s < 2^53 and if 10^0 <= p <= 10^22 then
