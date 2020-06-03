@@ -51,7 +51,7 @@ steps:
     - cd build
     - cmake  .. -DFAST_DOUBLE_PARSER_SANITIZE=ON
     - cmake --build . 
-    - ctest .  --output-on-failure
+    - ASAN_OPTIONS="detect_leaks=0" ctest .  --output-on-failure
 ---
 kind: pipeline
 name: sanitize-clang9
@@ -70,7 +70,7 @@ steps:
     - cd build
     - cmake  ..  -DFAST_DOUBLE_PARSER_SANITIZE=ON
     - cmake --build . 
-    - ctest .  --output-on-failure
+    - ASAN_OPTIONS="detect_leaks=0" ctest .  --output-on-failure
 ---
 kind: pipeline
 name: arm64-gcc8
@@ -124,7 +124,7 @@ steps:
     - cd build
     - cmake  ..  -DFAST_DOUBLE_PARSER_SANITIZE=ON
     - cmake --build . 
-    - ctest . --output-on-failure
+    - ASAN_OPTIONS="detect_leaks=0" ctest . --output-on-failure
 ---
 kind: pipeline
 name: arm64-sanitize-clang6
@@ -142,7 +142,7 @@ steps:
     - cd build
     - cmake  ..  -DFAST_DOUBLE_PARSER_SANITIZE=ON
     - cmake --build . 
-    - ctest . --output-on-failure
+    - ASAN_OPTIONS="detect_leaks=0" ctest . --output-on-failure
 ---
 kind: pipeline
 name: libcpp-clang9
