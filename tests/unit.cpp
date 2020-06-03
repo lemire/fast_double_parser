@@ -186,7 +186,17 @@ static const double testing_power_of_ten[] = {
     1e296,  1e297,  1e298,  1e299,  1e300,  1e301,  1e302,  1e303,  1e304,
     1e305,  1e306,  1e307,  1e308};
 
+
+void issue13() {
+  std::string a = "0";
+  double x;
+  fast_double_parser::parse_number(a.c_str(), &x);
+  if(x != 0) throw std::runtime_error("zero does not map to zero.");
+  std::cout << " zero maps to zero [!!!] " << std::endl;
+}
+
 int main() {
+  issue13();
   unit_tests();
   for (int p = -306; p <= 308; p++) {
     if (p == 23)

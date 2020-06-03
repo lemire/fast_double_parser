@@ -1,6 +1,8 @@
 cmake_policy(SET CMP0048 NEW)
 project(fast_double_parser LANGUAGES CXX VERSION 0.0.0.0)
 cmake_minimum_required(VERSION 3.11)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(benchmarks/dependencies/abseil-cpp)
 add_subdirectory(benchmarks/dependencies/double-conversion)
