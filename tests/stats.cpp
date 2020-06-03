@@ -99,7 +99,7 @@ size_t compute_float_64_stats(int64_t power, uint64_t i) {
   ///////
   uint64_t upperbit = upper >> 63;
   uint64_t mantissa = upper >> (upperbit + 9);
-  lz += 1 ^ upperbit;
+  lz += int(1 ^ upperbit);
   // Here we have mantissa < (1<<54).
 
   // We have to round to even. The "to even" part
@@ -135,7 +135,7 @@ size_t compute_float_64_stats(int64_t power, uint64_t i) {
 }
 
 // parse the number at p
-int parse_number_stats(const char *p) {
+size_t parse_number_stats(const char *p) {
   bool found_minus = (*p == '-');
   bool negative = false;
   if (found_minus) {
@@ -196,7 +196,7 @@ int parse_number_stats(const char *p) {
     exponent = first_after_period - p;
   }
   int digit_count =
-      p - start_digits - 1; // used later to guard against overflows
+      int(p - start_digits - 1); // used later to guard against overflows
   int64_t exp_number = 0;   // exponential part
   if (('e' == *p) || ('E' == *p)) {
     ++p;
@@ -245,7 +245,7 @@ int parse_number_stats(const char *p) {
       start++;
     }
     // we over-decrement by one when there is a '.'
-    digit_count -= (start - start_digits);
+    digit_count -= int(start - start_digits);
     if (digit_count >= 19) {
       // Chances are good that we had an overflow!
       // We start anew.
@@ -299,7 +299,7 @@ void random_floats(bool ininterval) {
     std::string s(64, '\0');
     auto written = std::snprintf(&s[0], s.size(), "%.*e", DBL_DIG + 1, d);
     s.resize(written);
-    int state = parse_number_stats(s.data());
+    size_t state = parse_number_stats(s.data());
     counters[state] += 1;
   }
   size_t count = howmany;
@@ -333,7 +333,7 @@ void fileload(char *filename) {
   std::string line;
   size_t count = 0;
   while (getline(inputfile, line)) {
-    int state = parse_number_stats(line.data());
+    size_t state = parse_number_stats(line.data());
     counters[state] += 1;
     count++;
   }

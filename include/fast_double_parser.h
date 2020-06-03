@@ -1176,7 +1176,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   ///////
   uint64_t upperbit = upper >> 63;
   uint64_t mantissa = upper >> (upperbit + 9);
-  lz += 1 ^ upperbit;
+  lz += int(1 ^ upperbit);
   // Here we have mantissa < (1<<54).
 
   // We have to round to even. The "to even" part
@@ -1346,7 +1346,7 @@ really_inline bool parse_number_base(const char *p, double *outDouble) {
     exponent = first_after_period - p;
   }
   int digit_count =
-      p - start_digits - 1; // used later to guard against overflows
+      int(p - start_digits - 1); // used later to guard against overflows
   int64_t exp_number = 0;   // exponential part
   if (('e' == *p) || ('E' == *p)) {
     ++p;
@@ -1395,7 +1395,7 @@ really_inline bool parse_number_base(const char *p, double *outDouble) {
       start++;
     }
     // we over-decrement by one when there is a decimal separator
-    digit_count -= (start - start_digits);
+    digit_count -= int(start - start_digits);
     if (digit_count >= 19) {
       // Chances are good that we had an overflow!
       // We start anew.

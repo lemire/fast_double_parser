@@ -87,7 +87,7 @@ double findmax_doubleconversion(std::vector<std::string> s) {
       separator);
   int processed_characters_count;
   for (std::string st : s) {
-    x = converter.StringToDouble(st.data(), st.size(),
+    x = converter.StringToDouble(st.data(), int(st.size()),
                                  &processed_characters_count);
     if (processed_characters_count == 0) {
       throw std::runtime_error("bug in findmax_doubleconversion");
@@ -124,7 +124,7 @@ void validate(std::vector<std::string> s) {
   int processed_characters_count;
   for (std::string st : s) {
     xref = strtod(st.data(), NULL);
-    x = converter.StringToDouble(st.data(), st.size(),
+    x = converter.StringToDouble(st.data(), int(st.size()),
                                  &processed_characters_count);
     if (xref != x) {
       std::cerr << "double conversion disagrees" << std::endl;
@@ -192,7 +192,7 @@ void process(std::vector<std::string> lines, size_t volume) {
     t2 = std::chrono::high_resolution_clock::now();
     if (ts == 0)
       printf("bug\n");
-    dif = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
+    dif = double(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
     if (i > 0)
       printf("fast_double_parser  %.2f MB/s\n", volumeMB * 1000000000 / dif);
     t1 = std::chrono::high_resolution_clock::now();
@@ -200,7 +200,7 @@ void process(std::vector<std::string> lines, size_t volume) {
     t2 = std::chrono::high_resolution_clock::now();
     if (ts == 0)
       printf("bug\n");
-    dif = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
+    dif = double(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
     if (i > 0)
       printf("strtod         %.2f MB/s\n", volumeMB * 1000000000 / dif);
     t1 = std::chrono::high_resolution_clock::now();
@@ -208,7 +208,7 @@ void process(std::vector<std::string> lines, size_t volume) {
     t2 = std::chrono::high_resolution_clock::now();
     if (ts == 0)
       printf("bug\n");
-    dif = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
+    dif = double(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
     if (i > 0)
       printf("abslfromch     %.2f MB/s\n", volumeMB * 1000000000 / dif);
     t1 = std::chrono::high_resolution_clock::now();
@@ -216,7 +216,7 @@ void process(std::vector<std::string> lines, size_t volume) {
     t2 = std::chrono::high_resolution_clock::now();
     if (ts == 0)
       printf("bug\n");
-    dif = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
+    dif = double(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
     if (i > 0)
       printf("absl           %.2f MB/s\n", volumeMB * 1000000000 / dif);
     t1 = std::chrono::high_resolution_clock::now();
@@ -224,7 +224,7 @@ void process(std::vector<std::string> lines, size_t volume) {
     t2 = std::chrono::high_resolution_clock::now();
     if (ts == 0)
       printf("bug\n");
-    dif = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
+    dif = double(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
     if (i > 0)
       printf("double-conv    %.2f MB/s\n", volumeMB * 1000000000 / dif);
     printf("\n\n");
