@@ -10,9 +10,6 @@ endif()
 
 option(FAST_DOUBLE_PARSER_SANITIZE "Sanitize addresses" OFF)
 
-add_subdirectory(benchmarks/dependencies/abseil-cpp)
-add_subdirectory(benchmarks/dependencies/double-conversion)
-
 set(headers include/fast_double_parser.h)
 set(unit_src tests/unit.cpp)
 set(stats_src tests/stats.cpp)
@@ -53,6 +50,9 @@ endfunction(initialize_submodule)
 
 initialize_submodule(benchmarks/dependencies/abseil-cpp)
 initialize_submodule(benchmarks/dependencies/double-conversion)
+
+add_subdirectory(benchmarks/dependencies/abseil-cpp)
+add_subdirectory(benchmarks/dependencies/double-conversion)
 
 
 
