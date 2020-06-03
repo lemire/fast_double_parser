@@ -34,17 +34,21 @@ You should be able to just drop  the header file into your project, it is a head
 
 If you want to run our benchmarks, you should have
 
-- Linux or macOS 
-- A recent C++ compiler with make
-- A recent cmake (one dependency requires cmake 3.5 or better) is necessary for the benchmarks 
+- Windows, Linux or macOS; presumably other systems can be supported as well
+- A recent C++ compiler
+- A recent cmake (cmake 3.11 or better) is necessary for the benchmarks 
 
 ## Usage (benchmarks)
 
 ```
-make bench
+cd build
+cmake ..
+cmake --build . --config Release  
+ctest .
+./benchmark
 ```
+Under Windows, the last like should be `./Release/benchmark.exe`.
 
-To run unit tests, type `make unit && ./unit`.
 
 ## Sample results
 
@@ -105,6 +109,8 @@ double x;
 char * string = ...
 bool isok = fast_double_parser::parse_number(string, &x);
 ```
+
+You must check the value of the boolean (`isok`): if it is false, then the function refused to parse.
 
 ## Credit
 
