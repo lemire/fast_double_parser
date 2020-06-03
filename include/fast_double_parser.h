@@ -43,18 +43,54 @@ struct value128 {
   uint64_t high;
 };
 
-value128 full_multiplication(uint64_t value1, uint64_t value2) {
-  value128 answer;
 #ifdef _MSC_VER
-  // todo: this might fail under visual studio for ARM
-  answer.low = _umul128(value1, value2, &answer.high);
+#define FAST_DOUBLE_PARSER_VISUAL_STUDIO 1
+#ifdef __clang__
+// clang under visual studio
+#define FAST_DOUBLE_PARSER_CLANG_VISUAL_STUDIO 1
 #else
+// just regular visual studio (best guess)
+#define FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO 1
+#endif // __clang__
+#endif // _MSC_VER
+
+#if defined(FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO) &&                                 \
+    !defined(_M_X64) && !defined(_M_ARM64)// _umul128 for x86, arm
+// this is a slow emulation routine for 32-bit Windows
+//
+static inline uint64_t __emulu(uint32_t x, uint32_t y) {
+  return x * (uint64_t)y;
+}
+static inline uint64_t _umul128(uint64_t ab, uint64_t cd, uint64_t *hi) {
+  uint64_t ad = __emulu((uint32_t)(ab >> 32), (uint32_t)cd);
+  uint64_t bd = __emulu((uint32_t)ab, (uint32_t)cd);
+  uint64_t adbc = ad + __emulu((uint32_t)ab, (uint32_t)(cd >> 32));
+  uint64_t adbc_carry = !!(adbc < ad);
+  uint64_t lo = bd + (adbc << 32);
+  *hi = __emulu((uint32_t)(ab >> 32), (uint32_t)(cd >> 32)) + (adbc >> 32) +
+        (adbc_carry << 32) + !!(lo < bd);
+  return lo;
+}
+#endif
+
+really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
+  value128 answer;
+#ifdef FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO
+#ifdef _M_ARM64
+  // ARM64 has native support for 64-bit multiplications, no need to emultate
+  answer.high = __umulh(value1, value2);
+  answer.low = value1 * value2;
+#else
+  answer.low = _umul128(value1, value2, &answer.high); // _umul128 not available on ARM64
+#endif // _M_ARM64
+#else // SIMDJSON_REGULAR_VISUAL_STUDIO
   __uint128_t r = ((__uint128_t)value1) * value2;
-  answer.low = r;
-  answer.high = r >> 64;
+  answer.low = uint64_t(r);
+  answer.high = uint64_t(r >> 64);
 #endif
   return answer;
 }
+
 
 /* result might be undefined when input_num is zero */
 int leading_zeroes(uint64_t input_num) {
