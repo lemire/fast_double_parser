@@ -22,10 +22,10 @@
 #include "double-conversion/ieee.h"
 #include "double-conversion/string-to-double.h"
 
-double findmax_fast_double_parser(std::vector<std::string> s) {
+double findmax_fast_double_parser(const std::vector<std::string>& s) {
   double answer = 0;
   double x;
-  for (std::string st : s) {
+  for (const std::string & st : s) {
     bool isok = fast_double_parser::parse_number(st.c_str(), &x);
     if (!isok)
       throw std::runtime_error("bug in findmax_fast_double_parser");
@@ -34,10 +34,10 @@ double findmax_fast_double_parser(std::vector<std::string> s) {
   return answer;
 }
 
-double findmax_strtod(std::vector<std::string> s) {
+double findmax_strtod(const std::vector<std::string>& s) {
   double answer = 0;
   double x = 0;
-  for (std::string st : s) {
+  for (const std::string& st : s) {
     char *pr = (char *)st.data();
     x = strtod(st.data(), &pr);
     if ((pr == nullptr) || (pr == st.data())) {
@@ -48,10 +48,10 @@ double findmax_strtod(std::vector<std::string> s) {
   return answer;
 }
 
-double findmax_absl(std::vector<std::string> s) {
+double findmax_absl(const std::vector<std::string>& s) {
   double answer = 0;
   double x = 0;
-  for (std::string st : s) {
+  for (const std::string& st : s) {
     bool isok = absl::SimpleAtod(st, &x);
     if (!isok) {
       throw std::runtime_error("bug in findmax_absl");
@@ -61,10 +61,10 @@ double findmax_absl(std::vector<std::string> s) {
   return answer;
 }
 
-double findmax_absl_from_chars(std::vector<std::string> s) {
+double findmax_absl_from_chars(const std::vector<std::string>& s) {
   double answer = 0;
   double x = 0;
-  for (std::string st : s) {
+  for (const std::string& st : s) {
     auto res = absl::from_chars(st.data(), st.data() + st.size(), x);
     if (res.ptr == st.data()) {
       throw std::runtime_error("bug in findmax_absl_from_chars");
@@ -74,7 +74,7 @@ double findmax_absl_from_chars(std::vector<std::string> s) {
   return answer;
 }
 
-double findmax_doubleconversion(std::vector<std::string> s) {
+double findmax_doubleconversion(const std::vector<std::string>& s) {
   double answer = 0;
   double x;
   int flags = double_conversion::StringToDoubleConverter::ALLOW_LEADING_SPACES |
@@ -86,7 +86,7 @@ double findmax_doubleconversion(std::vector<std::string> s) {
       flags, empty_string_value, double_conversion::Double::NaN(), NULL, NULL,
       separator);
   int processed_characters_count;
-  for (std::string st : s) {
+  for (const std::string& st : s) {
     x = converter.StringToDouble(st.data(), int(st.size()),
                                  &processed_characters_count);
     if (processed_characters_count == 0) {
@@ -110,7 +110,7 @@ inline uint64_t f64_ulp_dist(double a, double b) {
   return ua + ub + 0x80000000;
 }
 
-void validate(std::vector<std::string> s) {
+void validate(const std::vector<std::string>& s) {
 
   double x, xref;
   int flags = double_conversion::StringToDoubleConverter::ALLOW_LEADING_SPACES |
@@ -122,7 +122,7 @@ void validate(std::vector<std::string> s) {
       flags, empty_string_value, double_conversion::Double::NaN(), NULL, NULL,
       separator);
   int processed_characters_count;
-  for (std::string st : s) {
+  for (const std::string& st : s) {
     xref = strtod(st.data(), NULL);
     x = converter.StringToDouble(st.data(), int(st.size()),
                                  &processed_characters_count);
@@ -171,14 +171,14 @@ void validate(std::vector<std::string> s) {
   }
 }
 
-void printvec(std::vector<unsigned long long> evts, size_t volume) {
+void printvec(const std::vector<unsigned long long>& evts, size_t volume) {
   printf("%.2f cycles  %.2f instr  %.4f branch miss  %.2f cache ref %.2f cache "
          "miss \n",
          evts[0] * 1.0 / volume, evts[1] * 1.0 / volume, evts[2] * 1.0 / volume,
          evts[3] * 1.0 / volume, evts[4] * 1.0 / volume);
 }
 
-void process(std::vector<std::string> lines, size_t volume) {
+void process(const std::vector<std::string>& lines, size_t volume) {
   double volumeMB = volume / (1024. * 1024.);
   // size_t howmany = lines.size();
   std::chrono::high_resolution_clock::time_point t1, t2;
