@@ -197,6 +197,9 @@ void issue13() {
 }
 
 int main() {
+  const int evl_method = FLT_EVAL_METHOD;
+  printf("FLT_EVAL_METHOD = %d\n", evl_method);
+
   issue13();
   unit_tests();
   for (int p = -306; p <= 308; p++) {

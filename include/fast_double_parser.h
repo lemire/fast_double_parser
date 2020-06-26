@@ -9,7 +9,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-
+#if (FLT_EVAL_METHOD != 1) && (FLT_EVAL_METHOD != 0)
+#warning "Your floating-point rounding default is inadequate and may lead to inexact parsing."
+#endif
 #ifdef _MSC_VER
 #include <intrin.h>
 #define WARN_UNUSED
