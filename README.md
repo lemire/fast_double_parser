@@ -113,11 +113,6 @@ bool isok = fast_double_parser::parse_number(string, &x);
 You must check the value of the boolean (`isok`): if it is false, then the function refused to parse.
 
 
-## GCC and x86
-
-We rely on the compiler rounding to the nearest even when doing floating-point operations (divisions and multiplications). [GNU GCC does not always evaluate divisions between two floats using round-to-nearest](https://lemire.me/blog/2020/06/26/gcc-not-nearest/). 
-
-
 ## Credit
 
 Contributions are invited.

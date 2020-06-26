@@ -9,9 +9,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#if (FLT_EVAL_METHOD != 1) && (FLT_EVAL_METHOD != 0)
-#warning "Your floating-point rounding default is inadequate and may lead to inexact parsing."
-#endif
+
 #ifdef _MSC_VER
 #include <intrin.h>
 #define WARN_UNUSED
@@ -1088,7 +1086,7 @@ const uint64_t mantissa_128[] = {0x419ea3bd35385e2d,
                                  0x4cdc331d57fa5441,
                                  0xe0133fe4adf8e952,
                                  0x58180fddd97723a6,
-                                 0x570f09eaa7ea7648};
+                                 0x570f09eaa7ea7648,};
 
 // Attempts to compute i * 10^(power) exactly; and if "negative" is
 // true, negate the result.
@@ -1103,7 +1101,12 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // It was described in
   // Clinger WD. How to read floating point numbers accurately.
   // ACM SIGPLAN Notices. 1990
+#if (FLT_EVAL_METHOD != 1) && (FLT_EVAL_METHOD != 0)
+  // we do not trust the divisor
+  if (0 <= power && power <= 22 && i <= 9007199254740991) {
+#else
   if (-22 <= power && power <= 22 && i <= 9007199254740991) {
+#endif
     // convert the integer into a double. This is lossless since
     // 0 <= i <= 2^53 - 1.
     double d = double(i);
