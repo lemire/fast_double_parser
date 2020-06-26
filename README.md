@@ -112,8 +112,65 @@ bool isok = fast_double_parser::parse_number(string, &x);
 
 You must check the value of the boolean (`isok`): if it is false, then the function refused to parse.
 
+
+## GCC and x86
+
+We rely on the compiler rounding to the nearest even when doing floating-point operations (divisions and multiplications). Under x86 (32-bit), GNU GCC does not always evaluate divisions between two floats using round-to-even. It may be necessary to compile the code with the `-mpc64` flag. Demonstrations:
+
+```C++
+/*************
+# g++ -o round round.cpp   && ./round 
+x/y                          = 0.501782303179999944
+expected x/y (round to even) = 0.501782303180000055
+                               Equal
+                              Not equal
+FE_DOWNWARD  : 0.501782303179999944
+FE_TONEAREST : 0.501782303179999944
+FE_TOWARDZERO: 0.501782303179999944
+FE_UPWARD    : 0.501782303180000056
+
+************/
+
+#include <fenv.h>
+
+#include <iostream>
+
+#pragma STDC FENV_ACCESS ON
+
+#include <stdio.h>
+int main() {
+  double x = 50178230318.0;
+  double y = 100000000000.0;
+  double ratio = x/y;
+  printf("x/y                          = %18.18f\n", x / y);
+  printf("expected x/y (round to even) = %18.18f\n", 0.501782303180000055);
+  printf("                              ");
+  bool is_correct = (50178230318.0 / 100000000000.0 == 0.501782303180000055);
+  std::cout << (is_correct ? " Equal" : "Not equal") << std::endl;
+  printf("                              ");
+  is_correct = (ratio == 0.501782303180000055);
+  std::cout << (is_correct ? " Equal" : "Not equal") << std::endl;
+  fesetround(FE_DOWNWARD);
+  printf("FE_DOWNWARD  : %18.18f\n", x / y);
+
+  fesetround(FE_TONEAREST);
+  printf("FE_TONEAREST : %18.18f\n", x / y);
+
+  fesetround(FE_TOWARDZERO);
+  printf("FE_TOWARDZERO: %18.18f\n", x / y);
+
+  fesetround(FE_UPWARD);
+  printf("FE_UPWARD    : %18.18f\n", x / y);
+
+  fesetround(FE_TONEAREST);
+
+  return 0;
+}
+```
+
+
 ## Credit
 
 Contributions are invited.
 
-This is joint work with Michael Eisel.
+This is based on an original idea by Michael Eisel.
