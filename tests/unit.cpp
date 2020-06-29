@@ -199,7 +199,11 @@ void issue13() {
 int main() {
   const int evl_method = FLT_EVAL_METHOD;
   printf("FLT_EVAL_METHOD = %d\n", evl_method);
-
+  bool is_pow_correct{1e-308 == std::pow(10,-308)};
+  if(!is_pow_correct) {
+    printf("It appears that your system has a bad pow function.\n");
+  } 
+ 
   issue13();
   unit_tests();
   for (int p = -306; p <= 308; p++) {
