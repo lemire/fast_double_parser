@@ -122,7 +122,7 @@ The library has been adopted by [Google wuffs](https://github.com/google/wuffs/)
 
 ## Ports
 
-[There is a Julia port](https://github.com/simdjson/simdjson).
+[There is a Julia port](https://github.com/JuliaData/Parsers.jl).
 
 ## Credit
 
