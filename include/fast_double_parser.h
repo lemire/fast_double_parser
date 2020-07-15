@@ -1293,6 +1293,27 @@ static bool parse_float_strtod(const char *ptr, double *outDouble) {
   return true;
 }
 
+// same as above but makes a temporary copy so as not to read past the end of the buffer when parsing in-place
+static bool parse_float_strtod_copy(const char *ptr, const char *pe, double *outDouble) {
+    static constexpr size_t TEMP_STRING_MAX_LEN = 64;
+    char temp_stack[TEMP_STRING_MAX_LEN];
+    char * temp = temp_stack;
+    if ((size_t)(pe-ptr) >= TEMP_STRING_MAX_LEN) {
+        temp = (char*)malloc((size_t)(pe-ptr+1));
+	if(temp == nullptr) return false; // couldn't parse due to memory allocation failure.
+    }
+    std::memcpy(temp, ptr, (pe - ptr));
+    temp[(pe - ptr)] = 0;
+    char *endptr;
+    *outDouble = strtod(temp, &endptr);
+    if(temp != temp_stack) free(temp);
+    if ((endptr == temp) || (!std::isfinite(*outDouble))) {
+        return false;
+    }
+    return true;
+}
+
+
 #if ( __cplusplus < 201703L )
 template <char First, char... Rest>
 struct one_of_impl
@@ -1322,7 +1343,6 @@ bool is_one_of(char v)
   return ((v == Values) || ...);
 }
 #endif
-
 
 // parse the number at p
 template <char... DecSeparators>
@@ -1464,19 +1484,181 @@ really_inline bool parse_number_base(const char *p, double *outDouble) {
   return true;
 }
 
+// this version should be used when parsing data in place from streams. It wont read past pe
+// it is mostly a copy-paste from above
+template <char... DecSeparators>
+WARN_UNUSED
+really_inline bool parse_number_inplace_base(const char *p, const char *pe, double *outDouble) {
+    if (!p || !pe || (p == pe))
+        return false;
+    const char *pinit = p;
+    bool found_minus = (*p == '-');
+    bool negative = false;
+    if (found_minus) {
+        ++p;
+        if (p == pe)
+            return false; 
+
+        negative = true;
+        if (!is_integer(*p)) { // a negative sign must be followed by an integer
+            return false;
+        }
+    }
+    const char *const start_digits = p;
+
+    uint64_t i;      // an unsigned int avoids signed overflows (which are bad)
+    if (*p == '0') { // 0 cannot be followed by an integer
+        ++p;
+        if (p == pe)
+            return false;
+        if (is_integer(*p)) {
+            return false;
+        }
+        i = 0;
+    }
+    else {
+        if (!(is_integer(*p))) { // must start with an integer
+            return false;
+        }
+        unsigned char digit = *p - '0';
+        i = digit;
+        p++;
+        // the is_made_of_eight_digits_fast routine is unlikely to help here because
+        // we rarely see large integer parts like 123456789
+        while ((p != pe) && is_integer(*p)) {
+            digit = *p - '0';
+            // a multiplication by 10 is cheaper than an arbitrary integer
+            // multiplication
+            i = 10 * i + digit; // might overflow, we will handle the overflow later
+            ++p;
+        }
+    }
+    int64_t exponent = 0;
+    const char *first_after_period = NULL;
+    if ((p != pe) && is_one_of<DecSeparators...>(*p)) {
+        ++p;
+        if (p == pe)
+            return false; // no digits after separator
+        first_after_period = p;
+        if (is_integer(*p)) {
+            unsigned char digit = *p - '0';
+            ++p;
+            i = i * 10 + digit; // might overflow + multiplication by 10 is likely
+                                // cheaper than arbitrary mult.
+            // we will handle the overflow later
+        }
+        else {
+            return false;
+        }
+        while ((p != pe) && is_integer(*p)) {
+            unsigned char digit = *p - '0';
+            ++p;
+            i = i * 10 + digit; // in rare cases, this will overflow, but that's ok
+                                // because we have parse_highprecision_float later.
+        }
+        exponent = first_after_period - p;
+    }
+    int digit_count =
+        int(p - start_digits - 1); // used later to guard against overflows
+    int64_t exp_number = 0;   // exponential part
+    if ((p != pe) && (('e' == *p) || ('E' == *p))) {
+        ++p;
+        if (p == pe)
+            return false; // ill formed scientific notation
+        bool neg_exp = false;
+        if ('-' == *p) {
+            neg_exp = true;
+            ++p;
+        }
+        else if ('+' == *p) {
+            ++p;
+        }
+        if ((p == pe) || !is_integer(*p)) {
+            return false; // ill formed scientific notation
+        }
+        unsigned char digit = *p - '0';
+        exp_number = digit;
+        p++;
+        if ((p != pe) && is_integer(*p)) {
+            digit = *p - '0';
+            exp_number = 10 * exp_number + digit;
+            ++p;
+        }
+        if ((p != pe) && is_integer(*p)) {
+            digit = *p - '0';
+            exp_number = 10 * exp_number + digit;
+            ++p;
+        }
+        while ((p != pe) && is_integer(*p)) {
+            if (exp_number > 0x100000000) { // we need to check for overflows
+                                            // we refuse to parse this
+                return false;
+            }
+            digit = *p - '0';
+            exp_number = 10 * exp_number + digit;
+            ++p;
+        }
+        exponent += (neg_exp ? -exp_number : exp_number);
+    }
+    // If we frequently had to deal with long strings of digits,
+    // we could extend our code by using a 128-bit integer instead
+    // of a 64-bit integer. However, this is uncommon.
+    if (unlikely((digit_count >= 19))) { // this is uncommon
+      // It is possible that the integer had an overflow.
+      // We have to handle the case where we have 0.0000somenumber.
+        const char *start = start_digits;
+        while (*start == '0' || is_one_of<DecSeparators...>(*start)) {
+            start++;
+        }
+        // we over-decrement by one when there is a decimal separator
+        digit_count -= int(start - start_digits);
+        if (digit_count >= 19) {
+            // Chances are good that we had an overflow!
+            // We start anew.
+            // This will happen in the following examples:
+            // 10000000000000000000000000000000000000000000e+308
+            // 3.1415926535897932384626433832795028841971693993751
+            //
+            return parse_float_strtod_copy(pinit, pe, outDouble);
+        }
+    }
+    if (unlikely(exponent < FASTFLOAT_SMALLEST_POWER) ||
+        (exponent > FASTFLOAT_LARGEST_POWER)) {
+        // this is almost never going to get called!!!
+        // exponent could be as low as 325
+        return parse_float_strtod_copy(pinit, pe, outDouble);
+    }
+    // from this point forward, exponent >= FASTFLOAT_SMALLEST_POWER and
+    // exponent <= FASTFLOAT_LARGEST_POWER
+    bool success = true;
+    *outDouble = compute_float_64(exponent, i, negative, &success);
+    if (!success) {
+        // we are almost never going to get here.
+        return parse_float_strtod_copy(pinit, pe, outDouble);
+    }
+    return true;
+}
+
 typedef bool (*parser_function_t)(const char *p, double *outDouble);
 
+typedef bool(*inplace_parser_function_t)(const char *p, const char *pe, double *outDouble);
 
 constexpr parser_function_t parse_number WARN_UNUSED = parse_number_base<'.', ','>;
+
+constexpr inplace_parser_function_t parse_number_inplace WARN_UNUSED = parse_number_inplace_base<'.', ','>;
 
 namespace decimal_separator_dot
 {
   constexpr parser_function_t parse_number WARN_UNUSED = parse_number_base<'.'>;
+
+  constexpr inplace_parser_function_t parse_number_inplace WARN_UNUSED = parse_number_inplace_base<'.'>;
 }
 
 namespace decimal_separator_comma
 {
   constexpr parser_function_t parse_number WARN_UNUSED = parse_number_base<','>;
+
+  constexpr inplace_parser_function_t parse_number_inplace WARN_UNUSED = parse_number_inplace_base<','>;
 }
 
 } // namespace fast_double_parser

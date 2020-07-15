@@ -34,6 +34,19 @@ double findmax_fast_double_parser(const std::vector<std::string>& s) {
   return answer;
 }
 
+double findmax_fast_inplace_double_parser(const std::vector<std::string>& s) {
+    double answer = 0;
+    double x;
+    for (const std::string & st : s) {
+        bool isok = fast_double_parser::parse_number_inplace(st.c_str(), st.c_str() + st.size(), &x);
+        if (!isok)
+            throw std::runtime_error("bug in findmax_fast_inplace_double_parser");
+        answer = answer > x ? answer : x;
+    }
+    return answer;
+}
+
+
 double findmax_strtod(const std::vector<std::string>& s) {
   double answer = 0;
   double x = 0;
@@ -168,6 +181,19 @@ void validate(const std::vector<std::string>& s) {
       printf("f64_ulp_dist = %d\n", (int)f64_ulp_dist(x, xref));
       throw std::runtime_error("fast_double_parser disagrees");
     }
+    isok = fast_double_parser::parse_number_inplace(st.c_str(), st.c_str()+st.size(), &x);
+    if (!isok) {
+        printf("fast_inplace_double_parser refused to parse %s\n", st.c_str());
+        throw std::runtime_error("fast_inplace_double_parser refused to parse");
+    }
+    if (xref != x) {
+        std::cerr << "fast_inplace_double_parser disagrees" << std::endl;
+        printf("fast_inplace_double_parser: %.*e\n", DBL_DIG + 1, x);
+        printf("reference: %.*e\n", DBL_DIG + 1, xref);
+        printf("string: %s\n", st.c_str());
+        printf("f64_ulp_dist = %d\n", (int)f64_ulp_dist(x, xref));
+        throw std::runtime_error("fast_inplace_double_parser disagrees");
+    }
   }
 }
 
@@ -195,6 +221,14 @@ void process(const std::vector<std::string>& lines, size_t volume) {
     dif = double(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
     if (i > 0)
       printf("fast_double_parser  %.2f MB/s\n", volumeMB * 1000000000 / dif);
+    t1 = std::chrono::high_resolution_clock::now();
+    ts = findmax_fast_inplace_double_parser(lines);
+    t2 = std::chrono::high_resolution_clock::now();
+    if (ts == 0)
+        printf("bug\n");
+    dif = double(std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
+    if (i > 0)
+        printf("fast_inplace_double_parser  %.2f MB/s\n", volumeMB * 1000000000 / dif);
     t1 = std::chrono::high_resolution_clock::now();
     ts = findmax_strtod(lines);
     t2 = std::chrono::high_resolution_clock::now();
