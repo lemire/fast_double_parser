@@ -66,9 +66,47 @@ void check(double d) {
   }
 }
 
+void check_inplace(double d) {
+  std::string s(64, '\0');
+  auto written = std::snprintf(&s[0], s.size(), "%.*e", DBL_DIG + 1, d);
+  s.resize(written);
+  double x;
+  bool isok = fast_double_parser::parse_number_inplace(s.data(), s.data()+written, &x);
+  if (!isok) {
+    printf("fast_double_parser_inplace refused to parse %s\n", s.c_str());
+    throw std::runtime_error("fast_double_parser refused to parse");
+  }
+  if (d != x) {
+    std::cerr << "fast_double_parser disagrees" << std::endl;
+    printf("fast_double_parser: %.*e\n", DBL_DIG + 1, x);
+    printf("reference: %.*e\n", DBL_DIG + 1, d);
+    printf("string: %s\n", s.c_str());
+    printf("f64_ulp_dist = %d\n", (int)f64_ulp_dist(x, d));
+    throw std::runtime_error("fast_double_parser disagrees");
+  }
+}
+
 void check_string(std::string s) {
   double x;
   bool isok = fast_double_parser::parse_number(s.data(), &x);
+  if (!isok) {
+    printf("fast_double_parser refused to parse %s\n", s.c_str());
+    throw std::runtime_error("fast_double_parser refused to parse");
+  }
+  double d = strtod(s.data(), NULL);
+  if (d != x) {
+    std::cerr << "fast_double_parser disagrees" << std::endl;
+    printf("fast_double_parser: %.*e\n", DBL_DIG + 1, x);
+    printf("reference: %.*e\n", DBL_DIG + 1, d);
+    printf("string: %s\n", s.c_str());
+    printf("f64_ulp_dist = %d\n", (int)f64_ulp_dist(x, d));
+    throw std::runtime_error("fast_double_parser disagrees");
+  }
+}
+
+void check_string_inplace(std::string s) {
+  double x;
+  bool isok = fast_double_parser::parse_number_inplace(s.data(),s.data()+s.size(), &x);
   if (!isok) {
     printf("fast_double_parser refused to parse %s\n", s.c_str());
     throw std::runtime_error("fast_double_parser refused to parse");
@@ -88,11 +126,13 @@ void check_string(std::string s) {
 void unit_tests() {
   for (std::string s : {"7.3177701707893310e+15","1e23", "9007199254740995","7e23"}) {
     check_string(s);
+    check_string_inplace(s);
   }
   for (double d : {-65.613616999999977, 7.2057594037927933e+16, 1.0e-308,
                    0.1e-308, 0.01e-307, 1.79769e+308, 2.22507e-308,
                    -1.79769e+308, -2.22507e-308, 1e-308}) {
     check(d);
+    check_inplace(d);
   }
   uint64_t offset = 1190;
   size_t howmany = 10000000;
@@ -111,6 +151,7 @@ void unit_tests() {
       ::memcpy(&d, &x, sizeof(double));
     }
     check(d);
+    check_inplace(d);
   }
 
   printf("Unit tests ok\n");

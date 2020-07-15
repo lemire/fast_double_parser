@@ -1296,13 +1296,17 @@ static bool parse_float_strtod(const char *ptr, double *outDouble) {
 // same as above but makes a temporary copy so as not to read past the end of the buffer when parsing in-place
 static bool parse_float_strtod_copy(const char *ptr, const char *pe, double *outDouble) {
     static constexpr size_t TEMP_STRING_MAX_LEN = 64;
-    char temp[TEMP_STRING_MAX_LEN];
-    if (pe-ptr >= TEMP_STRING_MAX_LEN)
-        return false;
+    char temp_stack[TEMP_STRING_MAX_LEN];
+    char * temp = temp_stack;
+    if ((size_t)(pe-ptr) >= TEMP_STRING_MAX_LEN) {
+        temp = (char*)malloc((size_t)(pe-ptr+1));
+	if(temp == nullptr) return false; // couldn't parse due to memory allocation failure.
+    }
     std::memcpy(temp, ptr, (pe - ptr));
     temp[(pe - ptr)] = 0;
     char *endptr;
     *outDouble = strtod(temp, &endptr);
+    if(temp != temp_stack) free(temp);
     if ((endptr == temp) || (!std::isfinite(*outDouble))) {
         return false;
     }
