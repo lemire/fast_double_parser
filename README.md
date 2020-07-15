@@ -113,6 +113,10 @@ bool isok = fast_double_parser::parse_number(string, &x);
 You must check the value of the boolean (`isok`): if it is false, then the function refused to parse.
 
 
+## Users
+
+The library has been adopted by [Google wuffs](https://github.com/google/wuffs/).
+
 ## Ports
 
 [There is a Julia port](https://github.com/simdjson/simdjson).
