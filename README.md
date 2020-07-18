@@ -118,7 +118,7 @@ three parameters: the initial pointer, the end-of-string pointer and the referen
 
 ## Users
 
-The library has been adopted by [Google wuffs](https://github.com/google/wuffs/).
+The library has been reimplemented in [Google wuffs](https://github.com/google/wuffs/).
 
 ## Ports
 
