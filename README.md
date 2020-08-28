@@ -128,4 +128,4 @@ The library has been reimplemented in [Google wuffs](https://github.com/google/w
 
 Contributions are invited.
 
-This is based on an original idea by Michael Eisel.
+This is based on an original idea by Michael Eisel (joint work).
