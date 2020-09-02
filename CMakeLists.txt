@@ -12,7 +12,6 @@ option(FAST_DOUBLE_PARSER_SANITIZE "Sanitize addresses" OFF)
 
 set(headers include/fast_double_parser.h)
 set(unit_src tests/unit.cpp)
-set(stats_src tests/stats.cpp)
 
 set(benchmark_src benchmarks/benchmark.cpp)
 
@@ -30,8 +29,6 @@ target_include_directories(unit PUBLIC include)
 enable_testing()
 add_test(unit unit)
 
-add_executable(stats ${stats_src})
-target_include_directories(stats PUBLIC include)
 
 
 
