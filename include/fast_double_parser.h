@@ -1140,12 +1140,11 @@ really_inline bool parse_number_base(const char *p, double *outDouble) {
       ++p;
     }
     while (is_integer(*p)) {
-      if (exp_number > 0x100000000) { // we need to check for overflows
+      if (exp_number < 0x100000000) { // we need to check for overflows
                                       // we refuse to parse this
-        return false;
+        exp_number = 10 * exp_number + digit;
       }
       digit = *p - '0';
-      exp_number = 10 * exp_number + digit;
       ++p;
     }
     exponent += (neg_exp ? -exp_number : exp_number);

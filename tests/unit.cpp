@@ -237,6 +237,16 @@ void issue13() {
   std::cout << "zero maps to zero" << std::endl;
 }
 
+
+void issue23() {
+  std::string a = "0e+42949672970";
+  double x;
+  bool ok = fast_double_parser::parse_number(a.c_str(), &x);
+  if(!ok) throw std::runtime_error("could not parse zero.");
+  if(x != 0) throw std::runtime_error("zero does not map to zero.");
+  std::cout << "zero maps to zero" << std::endl;
+}
+
 int main() {
   const int evl_method = FLT_EVAL_METHOD;
   printf("FLT_EVAL_METHOD = %d\n", evl_method);
@@ -244,6 +254,7 @@ int main() {
   if(!is_pow_correct) {
     printf("It appears that your system has a bad pow function.\n");
   } 
+  issue23();
  
   issue13();
   unit_tests();
