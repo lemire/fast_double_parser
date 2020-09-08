@@ -999,7 +999,7 @@ static bool parse_float_strtod(const char *ptr, double *outDouble) {
   static _locale_t c_locale = _create_locale(LC_ALL, "C");
   *outDouble = _strtod_l(ptr, &endptr, c_locale);
 #else
-  static locale_t c_locale = newlocale(LC_ALL_MASK, NULL, NULL);
+  static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
   *outDouble = strtod_l(ptr, &endptr, c_locale);
 #endif
   // Some libraries will set errno = ERANGE when the value is subnormal,
