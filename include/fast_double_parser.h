@@ -15,7 +15,6 @@
  * Determining whether we should import xlocale.h or not is 
  * a bit of a nightmare.
  */
-#ifdef _GNU_SOURCE
 #ifdef __GLIBC__
 #include <features.h>
 #if !((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ > 25)))
@@ -24,7 +23,6 @@
 #else // not glibc but _GNU_SOURCE
 #include <xlocale.h>
 #endif
-#endif //  _GNU_SOURCE
 
 #ifdef _MSC_VER
 #include <intrin.h>
