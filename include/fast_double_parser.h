@@ -20,8 +20,10 @@
 #if !((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ > 25)))
 #include <xlocale.h> // old glibc
 #endif
-#else // not glibc but _GNU_SOURCE
+#else // not glibc
+#ifndef _MSC_VER // assume that everything that is not GLIBC and not Visual Studio needs xlocale.h
 #include <xlocale.h>
+#endif
 #endif
 
 #ifdef _MSC_VER
