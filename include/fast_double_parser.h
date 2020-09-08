@@ -995,7 +995,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
 
 static bool parse_float_strtod(const char *ptr, double *outDouble) {
   char *endptr;
-#ifdef _MSC_VER
+#ifdef _WIN32
   static _locale_t c_locale = _create_locale(LC_ALL, "C");
   *outDouble = _strtod_l(ptr, &endptr, c_locale);
 #else
@@ -1027,12 +1027,18 @@ static bool parse_float_strtod_copy(const char *ptr, const char *pe, double *out
     char * temp = temp_stack;
     if ((size_t)(pe-ptr) >= TEMP_STRING_MAX_LEN) {
         temp = (char*)malloc((size_t)(pe-ptr+1));
-	if(temp == nullptr) return false; // couldn't parse due to memory allocation failure.
+	      if(temp == nullptr) return false; // couldn't parse due to memory allocation failure.
     }
     std::memcpy(temp, ptr, (pe - ptr));
     temp[(pe - ptr)] = 0;
     char *endptr;
-    *outDouble = strtod(temp, &endptr);
+#ifdef _WIN32
+    static _locale_t c_locale = _create_locale(LC_ALL, "C");
+    *outDouble = _strtod_l(temp, &endptr, c_locale);
+#else
+    static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
+    *outDouble = strtod_l(temp, &endptr, c_locale);
+#endif
     if(temp != temp_stack) free(temp);
     if ((endptr == temp) || (!std::isfinite(*outDouble))) {
         return false;
