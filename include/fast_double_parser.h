@@ -9,6 +9,22 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <locale.h>
+
+/**
+ * Determining whether we should import xlocale.h or not is 
+ * a bit of a nightmare.
+ */
+#ifdef __GLIBC__
+#include <features.h>
+#if !((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ > 25)))
+#include <xlocale.h> // old glibc
+#endif
+#else // not glibc
+#ifndef _MSC_VER // assume that everything that is not GLIBC and not Visual Studio needs xlocale.h
+#include <xlocale.h>
+#endif
+#endif
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -979,7 +995,13 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
 
 static bool parse_float_strtod(const char *ptr, double *outDouble) {
   char *endptr;
-  *outDouble = strtod(ptr, &endptr);
+#ifdef _MSC_VER
+  static _locale_t c_locale = _create_locale(LC_ALL, "C");
+  *outDouble = _strtod_l(ptr, &endptr, c_locale);
+#else
+  static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
+  *outDouble = strtod_l(ptr, &endptr, c_locale);
+#endif
   // Some libraries will set errno = ERANGE when the value is subnormal,
   // yet we may want to be able to parse subnormal values.
   // However, we do not want to tolerate NAN or infinite values.
