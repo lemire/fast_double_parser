@@ -985,7 +985,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
 static bool parse_float_strtod(const char *ptr, double *outDouble) {
   char *endptr;
 #ifdef _MSC_VER
-  static _locale_t c_locale = _create_locale(LC_ALL, "C");;
+  static _locale_t c_locale = _create_locale(LC_ALL, "C");
   *outDouble = _strtod_l(ptr, &endptr, c_locale);
 #else
   static locale_t c_locale = newlocale(LC_ALL_MASK, NULL, NULL);
