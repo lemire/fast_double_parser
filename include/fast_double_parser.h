@@ -21,7 +21,7 @@
 #include <xlocale.h> // old glibc
 #endif
 #else // not glibc
-#ifndef _MSC_VER // assume that everything that is not GLIBC and not Visual Studio needs xlocale.h
+#if !(defined(_WIN32) || (__FreeBSD_version < 1000010))
 #include <xlocale.h>
 #endif
 #endif
