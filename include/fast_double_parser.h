@@ -9,6 +9,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#ifdef _MSC_VER
+#include <locale.h>
+#else
+#include <xlocale.h>
+#endif
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -979,7 +984,13 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
 
 static bool parse_float_strtod(const char *ptr, double *outDouble) {
   char *endptr;
-  *outDouble = strtod(ptr, &endptr);
+#ifdef _MSC_VER
+  static _locale_t c_locale = _create_locale(LC_ALL, "C");;
+  *outDouble = _strtod_l(ptr, &endptr, c_localeæ);
+#else
+  static locale_t c_locale = newlocale(LC_ALL_MASK, NULL, NULL);
+  *outDouble = strtod_l(ptr, &endptr, c_locale);
+#endif
   // Some libraries will set errno = ERANGE when the value is subnormal,
   // yet we may want to be able to parse subnormal values.
   // However, we do not want to tolerate NAN or infinite values.
