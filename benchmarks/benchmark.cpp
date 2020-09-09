@@ -52,7 +52,13 @@ double findmax_strtod(const std::vector<std::string>& s) {
   double x = 0;
   for (const std::string& st : s) {
     char *pr = (char *)st.data();
-    x = strtod(st.data(), &pr);
+#ifdef _WIN32
+    static _locale_t c_locale = _create_locale(LC_ALL, "C");
+    x = _strtod_l(st.data(), &pr, c_locale);
+#else
+    static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
+    x = strtod_l(st.data(), &pr, c_locale);
+#endif
     if ((pr == nullptr) || (pr == st.data())) {
       throw std::runtime_error("bug in findmax_strtod");
     }
@@ -136,7 +142,13 @@ void validate(const std::vector<std::string>& s) {
       separator);
   int processed_characters_count;
   for (const std::string& st : s) {
-    xref = strtod(st.data(), NULL);
+#ifdef _WIN32
+    static _locale_t c_locale = _create_locale(LC_ALL, "C");
+    xref = _strtod_l(st.data(), nullptr, c_locale);
+#else
+    static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
+    xref = strtod_l(st.data(), nullptr, c_locale);
+#endif
     x = converter.StringToDouble(st.data(), int(st.size()),
                                  &processed_characters_count);
     if (xref != x) {
