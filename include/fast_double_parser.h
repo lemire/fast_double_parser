@@ -1162,11 +1162,10 @@ really_inline bool parse_number_base(const char *p, double *outDouble) {
       ++p;
     }
     while (is_integer(*p)) {
+      digit = *p - '0';
       if (exp_number < 0x100000000) { // we need to check for overflows
-                                      // we refuse to parse this
         exp_number = 10 * exp_number + digit;
       }
-      digit = *p - '0';
       ++p;
     }
     exponent += (neg_exp ? -exp_number : exp_number);
@@ -1316,12 +1315,10 @@ really_inline bool parse_number_inplace_base(const char *p, const char *pe, doub
             ++p;
         }
         while ((p != pe) && is_integer(*p)) {
-            if (exp_number > 0x100000000) { // we need to check for overflows
-                                            // we refuse to parse this
-                return false;
-            }
             digit = *p - '0';
-            exp_number = 10 * exp_number + digit;
+            if (exp_number < 0x100000000) { // we need to check for overflows
+              exp_number = 10 * exp_number + digit;
+            }
             ++p;
         }
         exponent += (neg_exp ? -exp_number : exp_number);
