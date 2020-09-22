@@ -44,13 +44,16 @@ If you want to run our benchmarks, you should have
 ## Usage (benchmarks)
 
 ```
+git clone https://github.com/lemire/fast_double_parser.git
+cd fast_double_parser
+mkdir build
 cd build
 cmake ..
 cmake --build . --config Release  
 ctest .
 ./benchmark
 ```
-Under Windows, the last like should be `./Release/benchmark.exe`.
+Under Windows, the last line should be `./Release/benchmark.exe`.
 
 
 ## Sample results

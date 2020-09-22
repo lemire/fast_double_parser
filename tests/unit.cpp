@@ -93,7 +93,13 @@ void check_string(std::string s) {
     printf("fast_double_parser refused to parse %s\n", s.c_str());
     throw std::runtime_error("fast_double_parser refused to parse");
   }
-  double d = strtod(s.data(), NULL);
+#ifdef _WIN32
+  static _locale_t c_locale = _create_locale(LC_ALL, "C");
+  double d = _strtod_l(s.data(), nullptr, c_locale);
+#else
+  static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
+  double d = strtod_l(s.data(), nullptr, c_locale);
+#endif
   if (d != x) {
     std::cerr << "fast_double_parser disagrees" << std::endl;
     printf("fast_double_parser: %.*e\n", DBL_DIG + 1, x);
@@ -111,7 +117,13 @@ void check_string_inplace(std::string s) {
     printf("fast_double_parser refused to parse %s\n", s.c_str());
     throw std::runtime_error("fast_double_parser refused to parse");
   }
-  double d = strtod(s.data(), NULL);
+#ifdef _WIN32
+  static _locale_t c_locale = _create_locale(LC_ALL, "C");
+  double d = _strtod_l(s.data(), nullptr, c_locale);
+#else
+  static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
+  double d = strtod_l(s.data(), nullptr, c_locale);
+#endif
   if (d != x) {
     std::cerr << "fast_double_parser disagrees" << std::endl;
     printf("fast_double_parser: %.*e\n", DBL_DIG + 1, x);
