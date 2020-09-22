@@ -28,6 +28,9 @@ We expect string numbers to follow [RFC 7159](https://tools.ietf.org/html/rfc715
 the parser will reject overly large values that would not fit in binary64. It will not produce
 NaN or infinite values.
 
+The parsing is locale-independent. E.g., it will parse 0.5 as 1/2, but it will not parse 0,5 as
+1/2 even if you are under a French system.
+
 ## Requirements
 
 You should be able to just drop  the header file into your project, it is a header-only library.

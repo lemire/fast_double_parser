@@ -1366,23 +1366,9 @@ typedef bool (*parser_function_t)(const char *p, double *outDouble);
 
 typedef bool(*inplace_parser_function_t)(const char *p, const char *pe, double *outDouble);
 
-constexpr parser_function_t parse_number WARN_UNUSED = parse_number_base<'.', ','>;
+constexpr parser_function_t parse_number WARN_UNUSED = parse_number_base<'.'>;
 
-constexpr inplace_parser_function_t parse_number_inplace WARN_UNUSED = parse_number_inplace_base<'.', ','>;
-
-namespace decimal_separator_dot
-{
-  constexpr parser_function_t parse_number WARN_UNUSED = parse_number_base<'.'>;
-
-  constexpr inplace_parser_function_t parse_number_inplace WARN_UNUSED = parse_number_inplace_base<'.'>;
-}
-
-namespace decimal_separator_comma
-{
-  constexpr parser_function_t parse_number WARN_UNUSED = parse_number_base<','>;
-
-  constexpr inplace_parser_function_t parse_number_inplace WARN_UNUSED = parse_number_inplace_base<','>;
-}
+constexpr inplace_parser_function_t parse_number_inplace WARN_UNUSED = parse_number_inplace_base<'.'>;
 
 } // namespace fast_double_parser
 
