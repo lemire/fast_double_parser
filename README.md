@@ -41,6 +41,9 @@ If you want to run our benchmarks, you should have
 ## Usage (benchmarks)
 
 ```
+git clone https://github.com/lemire/fast_double_parser.git
+cd fast_double_parser
+mkdir build
 cd build
 cmake ..
 cmake --build . --config Release  
