@@ -50,7 +50,7 @@ cmake --build . --config Release
 ctest .
 ./benchmark
 ```
-Under Windows, the last like should be `./Release/benchmark.exe`.
+Under Windows, the last line should be `./Release/benchmark.exe`.
 
 
 ## Sample results
