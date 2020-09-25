@@ -15,6 +15,14 @@
  * Determining whether we should import xlocale.h or not is 
  * a bit of a nightmare.
  */
+#ifdef __has_include
+// This is the easy case: we have __has_include and can check whether
+// xlocale is available. If so, we load it up.
+#if __has_include(<xlocale.h>)
+#include <xlocale.h>
+#endif // __has_include
+#else // We do not have __has_include
+
 #ifdef __GLIBC__
 #include <features.h>
 #if !((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ > 25)))
@@ -25,6 +33,7 @@
 #include <xlocale.h>
 #endif
 #endif
+#endif // __has_include
 
 #ifdef _MSC_VER
 #include <intrin.h>
