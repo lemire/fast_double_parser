@@ -42,6 +42,23 @@
 #define WARN_UNUSED __attribute__((warn_unused_result))
 #endif
 
+
+#ifdef __CYGWIN__ 
+#include <locale>
+#include <sstream>
+// workaround for CYGWIN
+double cygwin_strtod_l(const char* start, char** end, locale_t loc) {
+    double d;
+    std::stringstream ss;
+    ss.imbue(std::locale::classic());
+    ss << start;
+    ss >> d;
+    size_t nread = ss.tellg();
+    *end = const_cast<char*>(start) + nread;
+    return d;
+}
+#endif
+
 namespace fast_double_parser {
 
 #define FASTFLOAT_SMALLEST_POWER -325
@@ -1004,7 +1021,11 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
 
 static bool parse_float_strtod(const char *ptr, double *outDouble) {
   char *endptr;
-#ifdef _WIN32
+#ifdef __CYGWIN__
+  // workround for cygwin
+  static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
+  *outDouble = cygwin_strtod_l(ptr, &endptr, c_locale);
+#elif defined(_WIN32)
   static _locale_t c_locale = _create_locale(LC_ALL, "C");
   *outDouble = _strtod_l(ptr, &endptr, c_locale);
 #else
@@ -1041,7 +1062,11 @@ static bool parse_float_strtod_copy(const char *ptr, const char *pe, double *out
     std::memcpy(temp, ptr, (pe - ptr));
     temp[(pe - ptr)] = 0;
     char *endptr;
-#ifdef _WIN32
+#ifdef __CYGWIN__
+  // workround for cygwin
+  static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
+  *outDouble = cygwin_strtod_l(ptr, &endptr, c_locale);
+#elif defined(_WIN32)
     static _locale_t c_locale = _create_locale(LC_ALL, "C");
     *outDouble = _strtod_l(temp, &endptr, c_locale);
 #else
