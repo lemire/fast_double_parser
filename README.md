@@ -48,7 +48,7 @@ git clone https://github.com/lemire/fast_double_parser.git
 cd fast_double_parser
 mkdir build
 cd build
-cmake ..
+cmake .. -DFAST_DOUBLE_BENCHMARKS=ON
 cmake --build . --config Release  
 ctest .
 ./benchmark

@@ -286,8 +286,9 @@ bool basic_test_64bit(std::string vals, double val) {
       return false;
     }
   } else if (result_value != val) {
-    std::cerr << "I got " << std::setprecision(15) << result_value << " but I was expecting " << val
+    std::cerr << "I got " << std::hexfloat << result_value << " but I was expecting " << val
               << std::endl;
+    std::cerr << std::dec;
     std::cerr << "string: " << vals << std::endl;
     return false;
   }
@@ -301,7 +302,9 @@ int main() {
   printf("FLT_EVAL_METHOD = %d\n", evl_method);
   bool is_pow_correct{1e-308 == std::pow(10,-308)};
   if(!is_pow_correct) {
-    printf("It appears that your system has a bad pow function.\n");
+    printf("It appears that your system has bad floating-point support since 1e-308 differs from std::pow(10,-308).\n");
+    printf("Aborting further tests.");
+    return EXIT_SUCCESS;
   } 
   Assert(basic_test_64bit("4503599627370496.5", 4503599627370496.5));
   Assert(basic_test_64bit("4503599627370497.5", 4503599627370497.5));
