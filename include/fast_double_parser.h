@@ -150,7 +150,7 @@ really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
   answer.high = uint64_t(r >> 64);
 #else
   // fallback
-  answer.low = Emulate64x64to128(&answer.high, value1,  value2);
+  answer.low = Emulate64x64to128(answer.high, value1,  value2);
 #endif
 #endif
   return answer;
