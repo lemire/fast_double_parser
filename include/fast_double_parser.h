@@ -115,6 +115,24 @@ static inline uint64_t _umul128(uint64_t ab, uint64_t cd, uint64_t *hi) {
 }
 #endif
 
+// We need a backup on old systems.
+// credit: https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication
+uint64_t Emulate64x64to128(uint64_t& r_hi, const uint64_t x, const uint64_t y) {
+    const uint64_t x0 = (uint32_t)x, x1 = x >> 32;
+    const uint64_t y0 = (uint32_t)y, y1 = y >> 32;
+    const uint64_t p11 = x1 * y1, p01 = x0 * y1;
+    const uint64_t p10 = x1 * y0, p00 = x0 * y0;
+    
+    // 64-bit product + two 32-bit values
+    const uint64_t middle = p10 + (p00 >> 32) + (uint32_t)p01;
+
+    // 64-bit product + two 32-bit values
+    r_hi = p11 + (middle >> 32) + (p01 >> 32);
+
+    // Add LOW PART and lower half of MIDDLE PART
+    return (middle << 32) | (uint32_t)p00;
+}
+
 really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
   value128 answer;
 #ifdef FAST_DOUBLE_PARSER_REGULAR_VISUAL_STUDIO
@@ -126,9 +144,14 @@ really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
   answer.low = _umul128(value1, value2, &answer.high); // _umul128 not available on ARM64
 #endif // _M_ARM64
 #else // SIMDJSON_REGULAR_VISUAL_STUDIO
+#ifdef __SIZEOF_INT128__ // this is what we have on most 32-bit systems
   __uint128_t r = ((__uint128_t)value1) * value2;
   answer.low = uint64_t(r);
   answer.high = uint64_t(r >> 64);
+#else
+  // fallback
+  answer.low = Emulate64x64to128(&answer.high, value1,  value2);
+#endif
 #endif
   return answer;
 }
