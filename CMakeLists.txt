@@ -29,6 +29,7 @@ target_include_directories(unit PUBLIC include)
 enable_testing()
 add_test(unit unit)
 
+option(FAST_DOUBLE_BENCHMARKS "Sanitize addresses" OFF)
 
 
 
@@ -45,14 +46,16 @@ function(initialize_submodule DIRECTORY)
   endif()
 endfunction(initialize_submodule)
 
-initialize_submodule(benchmarks/dependencies/abseil-cpp)
-initialize_submodule(benchmarks/dependencies/double-conversion)
+if(FAST_DOUBLE_BENCHMARKS)
+  initialize_submodule(benchmarks/dependencies/abseil-cpp)
+  initialize_submodule(benchmarks/dependencies/double-conversion)
 
-add_subdirectory(benchmarks/dependencies/abseil-cpp)
-add_subdirectory(benchmarks/dependencies/double-conversion)
+  add_subdirectory(benchmarks/dependencies/abseil-cpp)
+  add_subdirectory(benchmarks/dependencies/double-conversion)
 
 
 
-add_executable(benchmark ${benchmark_src})
-target_link_libraries(benchmark PUBLIC double-conversion absl_strings)
-target_include_directories(benchmark PUBLIC include)
+  add_executable(benchmark ${benchmark_src})
+  target_link_libraries(benchmark PUBLIC double-conversion absl_strings)
+  target_include_directories(benchmark PUBLIC include)
+endif(FAST_DOUBLE_BENCHMARKS)
