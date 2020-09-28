@@ -17,7 +17,7 @@ jobs:
         cmakeBuildType: Release
         buildWithCMake: true
         cmakeGenerator: VS16Win64
-        buildWithCMakeArgs:  --target unit --config Release  
+        buildWithCMakeArgs:  --config Release  
 
     - name: 'Run CTest'
       run: ctest -C Release    --output-on-failure

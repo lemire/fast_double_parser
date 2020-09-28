@@ -16,5 +16,5 @@ jobs:
           mkdir build &&
           cd build &&
           cmake .. &&
-          cmake --build .  --target unit   &&
+          cmake --build .  &&
           ctest -j --output-on-failure

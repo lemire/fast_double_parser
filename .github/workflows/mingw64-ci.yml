@@ -45,5 +45,5 @@ jobs:
           mkdir build64
           cd build64
           cmake  ..
-          cmake --build .   --target unit  --verbose
+          cmake --build .   --verbose
           ctest -j4 --output-on-failure

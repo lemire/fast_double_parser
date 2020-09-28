@@ -15,7 +15,7 @@ task:
     - mkdir build
     - cd build
     - cmake ..
-    - cmake --target unit
+    - cmake .
   test_script:
     - cd build
     - ctest --output-on-failure 
