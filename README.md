@@ -40,6 +40,8 @@ If you want to run our benchmarks, you should have
 - A recent C++ compiler
 - A recent cmake (cmake 3.11 or better) is necessary for the benchmarks 
 
+This code falls back on your platform's `strdtod_l` /`_strtod_l` implementation for numbers with a long decimal mantissa (more than 19 digits).
+
 ## Usage (benchmarks)
 
 ```
