@@ -955,6 +955,9 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // know that we have an exact computed value for the leading
   // 55 bits because any imprecision would play out as a +1, in
   // the worst case.
+  // Having 55 bits is necessary because
+  // we need 53 bits for the mantissa but we have to have one rounding bit and
+  // we can waste a bit if the most significant bit of the product is zero.
   // We expect this next branch to be rarely taken (say 1% of the time).
   // When (upper & 0x1FF) == 0x1FF, it can be common for
   // lower + i < lower to be true (proba. much higher than 1%).
