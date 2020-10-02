@@ -119,10 +119,6 @@ bool isok = fast_double_parser::parse_number(string, &x);
 
 You must check the value of the boolean (`isok`): if it is false, then the function refused to parse.
 
-
-There is also a (slightly slower) version of the function called `parse_numer_inplace` that takes
-three parameters: the initial pointer, the end-of-string pointer and the reference to the result.
-
 ## Users
 
 The library has been reimplemented in [Google wuffs](https://github.com/google/wuffs/).
