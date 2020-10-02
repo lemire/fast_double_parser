@@ -5,6 +5,33 @@ Fast function to parse strings containing decimal numbers into double-precision 
 
 We support all major compilers: Visual Studio, GNU GCC, LLVM Clang. We require C++11.
 
+## Usage
+
+You should be able to just drop  the header file into your project, it is a header-only library.
+
+
+The current API is simple enough:
+
+```C++
+#include "fast_double_parser.h" // the file is in the include directory
+
+
+double x;
+char * string = ...
+bool isok = fast_double_parser::parse_number(string, &x);
+```
+
+You must check the value of the boolean (`isok`): if it is false, then the function refused to parse the input.
+
+
+We expect string numbers to follow [RFC 7159](https://tools.ietf.org/html/rfc7159) (JSON standard). In particular,
+the parser will reject overly large values that would not fit in binary64. It will not accept
+NaN or infinite values.
+
+It works much like the C standard function `strtod` expect that the parsing is locale-independent. E.g., it will parse 0.5 as 1/2, but it will not parse 0,5 as
+1/2 even if you are under a French system. Locale independence is by design (it is not a limitation).
+
+
 ## Why should I expect this function to be faster?
 
 Parsing strings into binary numbers (IEEE 754) is surprisingly difficult. Parsing a single number can take hundreds of instructions and CPU cycles, if not thousands. It is relatively easy to parse numbers faster if you sacrifice accuracy (e.g., tolerate 1 ULP errors), but we are interested in "perfect" parsing.
@@ -23,16 +50,9 @@ We have benchmarked our parser on a collection of strings from a sample geojson 
 
 (configuration: Apple clang version 11.0.0, I7-7700K)
 
-We expect string numbers to follow [RFC 7159](https://tools.ietf.org/html/rfc7159). In particular,
-the parser will reject overly large values that would not fit in binary64. It will not produce
-NaN or infinite values.
-
-The parsing is locale-independent. E.g., it will parse 0.5 as 1/2, but it will not parse 0,5 as
-1/2 even if you are under a French system.
 
 ## Requirements
 
-You should be able to just drop  the header file into your project, it is a header-only library.
 
 If you want to run our benchmarks, you should have
 
@@ -104,20 +124,6 @@ absl           328.45 MB/s
 double-conv    243.90 MB/s
 ```
 
-## API
-
-The current API is simple enough:
-
-```C++
-#include "fast_double_parser.h" // the file is in the include directory
-
-
-double x;
-char * string = ...
-bool isok = fast_double_parser::parse_number(string, &x);
-```
-
-You must check the value of the boolean (`isok`): if it is false, then the function refused to parse.
 
 ## Users
 
