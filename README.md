@@ -125,13 +125,12 @@ double-conv    243.90 MB/s
 ```
 
 
-## Users
+## Ports and users
 
-The library has been reimplemented in [Google wuffs](https://github.com/google/wuffs/).
-
-## Ports
-
-[There is a Julia port](https://github.com/JuliaData/Parsers.jl).
+- It part of the database engine [noisepage](https://github.com/cmu-db/noisepage). 
+- The library has been reimplemented in [Google wuffs](https://github.com/google/wuffs/).
+- [There is a Julia port](https://github.com/JuliaData/Parsers.jl).
+- [There is a Rust port](https://github.com/ezrosent/frawk/tree/master/src/runtime/float_parse).
 
 ## Credit
 
