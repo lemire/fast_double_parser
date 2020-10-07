@@ -15,6 +15,25 @@
  * Determining whether we should import xlocale.h or not is 
  * a bit of a nightmare.
  */
+#if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
+// Anything at all that is related to cygwin, msys and so forth will
+// always use this fallback because we cannot rely on it behaving as normal
+// gcc.
+#include <locale>
+#include <sstream>
+// workaround for CYGWIN
+double cygwin_strtod_l(const char* start, char** end) {
+    double d;
+    std::stringstream ss;
+    ss.imbue(std::locale::classic());
+    ss << start;
+    ss >> d;
+    size_t nread = ss.tellg();
+    *end = const_cast<char*>(start) + nread;
+    return d;
+}
+#else
+
 #ifdef __has_include
 // This is the easy case: we have __has_include and can check whether
 // xlocale is available. If so, we load it up.
@@ -35,28 +54,16 @@
 #endif
 #endif // __has_include
 
+
+#endif //  defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
+
+
+
 #ifdef _MSC_VER
 #include <intrin.h>
 #define WARN_UNUSED
 #else
 #define WARN_UNUSED __attribute__((warn_unused_result))
-#endif
-
-
-#ifdef __CYGWIN__ 
-#include <locale>
-#include <sstream>
-// workaround for CYGWIN
-double cygwin_strtod_l(const char* start, char** end, locale_t loc) {
-    double d;
-    std::stringstream ss;
-    ss.imbue(std::locale::classic());
-    ss << start;
-    ss >> d;
-    size_t nread = ss.tellg();
-    *end = const_cast<char*>(start) + nread;
-    return d;
-}
 #endif
 
 namespace fast_double_parser {
@@ -955,6 +962,9 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // know that we have an exact computed value for the leading
   // 55 bits because any imprecision would play out as a +1, in
   // the worst case.
+  // Having 55 bits is necessary because
+  // we need 53 bits for the mantissa but we have to have one rounding bit and
+  // we can waste a bit if the most significant bit of the product is zero.
   // We expect this next branch to be rarely taken (say 1% of the time).
   // When (upper & 0x1FF) == 0x1FF, it can be common for
   // lower + i < lower to be true (proba. much higher than 1%).
@@ -1044,10 +1054,9 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
 
 static bool parse_float_strtod(const char *ptr, double *outDouble) {
   char *endptr;
-#ifdef __CYGWIN__
+#if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
   // workround for cygwin
-  static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
-  *outDouble = cygwin_strtod_l(ptr, &endptr, c_locale);
+  *outDouble = cygwin_strtod_l(ptr, &endptr);
 #elif defined(_WIN32)
   static _locale_t c_locale = _create_locale(LC_ALL, "C");
   *outDouble = _strtod_l(ptr, &endptr, c_locale);
