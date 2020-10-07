@@ -22,7 +22,7 @@
 #include <locale>
 #include <sstream>
 // workaround for CYGWIN
-double cygwin_strtod_l(const char* start, char** end, locale_t loc) {
+double cygwin_strtod_l(const char* start, char** end) {
     double d;
     std::stringstream ss;
     ss.imbue(std::locale::classic());
@@ -1054,7 +1054,7 @@ static bool parse_float_strtod(const char *ptr, double *outDouble) {
 #if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
   // workround for cygwin
   static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
-  *outDouble = cygwin_strtod_l(ptr, &endptr, c_locale);
+  *outDouble = cygwin_strtod_l(ptr, &endptr);
 #elif defined(_WIN32)
   static _locale_t c_locale = _create_locale(LC_ALL, "C");
   *outDouble = _strtod_l(ptr, &endptr, c_locale);
