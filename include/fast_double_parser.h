@@ -54,13 +54,16 @@ double cygwin_strtod_l(const char* start, char** end) {
 #endif
 #endif // __has_include
 
+
+#endif //  defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
+
+
+
 #ifdef _MSC_VER
 #include <intrin.h>
 #define WARN_UNUSED
 #else
 #define WARN_UNUSED __attribute__((warn_unused_result))
-#endif
-
 #endif
 
 namespace fast_double_parser {
