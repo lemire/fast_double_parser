@@ -1053,7 +1053,6 @@ static bool parse_float_strtod(const char *ptr, double *outDouble) {
   char *endptr;
 #if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
   // workround for cygwin
-  static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
   *outDouble = cygwin_strtod_l(ptr, &endptr);
 #elif defined(_WIN32)
   static _locale_t c_locale = _create_locale(LC_ALL, "C");
