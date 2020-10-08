@@ -68,6 +68,24 @@ double cygwin_strtod_l(const char* start, char** end) {
 
 namespace fast_double_parser {
 
+/**
+ * The smallest non-zero float (binary64) is 2^−1074.
+ * We take as input numbers of the form w x 10^q where w < 2^64.
+ * We have that w * 10^-343 < 2^(64-344) 5^-343 < 2^-1076.
+ * However, we have that 
+ * (2^64-1) * 10^-342 = (2^64-1) * 2^-342 * 5^-342 > 2^−1074.
+ * Thus it is possible for a number of the form w * 10^-342 where 
+ * w is a 64-bit value to be a non-zero floating-point number.
+ *********
+ * If we are solely interested in the *normal* numbers then the
+ * smallest value is 2^-1022. We can generate a value larger
+ * than 2^-1022 with expressions of the form w * 10^-326.
+ * Thus we need to pick FASTFLOAT_SMALLEST_POWER >= -326.
+ *********
+ * Any number of form w * 10^309 where w>= 1 is going to be 
+ * infinite in binary64 so we never need to worry about powers
+ * of 5 greater than 308.
+ */
 #define FASTFLOAT_SMALLEST_POWER -325
 #define FASTFLOAT_LARGEST_POWER 308
 
