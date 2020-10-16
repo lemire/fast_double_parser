@@ -76,6 +76,7 @@ ctest .
 ```
 Under Windows, the last line should be `./Release/benchmark.exe`.
 
+Be mindful that the benchmarks include the abseil library which is not supported everywhere.
 
 ## Sample results
 

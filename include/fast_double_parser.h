@@ -68,6 +68,24 @@ double cygwin_strtod_l(const char* start, char** end) {
 
 namespace fast_double_parser {
 
+/**
+ * The smallest non-zero float (binary64) is 2^−1074.
+ * We take as input numbers of the form w x 10^q where w < 2^64.
+ * We have that w * 10^-343 < 2^(64-344) 5^-343 < 2^-1076.
+ * However, we have that 
+ * (2^64-1) * 10^-342 = (2^64-1) * 2^-342 * 5^-342 > 2^−1074.
+ * Thus it is possible for a number of the form w * 10^-342 where 
+ * w is a 64-bit value to be a non-zero floating-point number.
+ *********
+ * If we are solely interested in the *normal* numbers then the
+ * smallest value is 2^-1022. We can generate a value larger
+ * than 2^-1022 with expressions of the form w * 10^-326.
+ * Thus we need to pick FASTFLOAT_SMALLEST_POWER >= -326.
+ *********
+ * Any number of form w * 10^309 where w>= 1 is going to be 
+ * infinite in binary64 so we never need to worry about powers
+ * of 5 greater than 308.
+ */
 #define FASTFLOAT_SMALLEST_POWER -325
 #define FASTFLOAT_LARGEST_POWER 308
 
@@ -190,6 +208,17 @@ static inline bool is_integer(char c) {
   // this gets compiled to (uint8_t)(c - '0') <= 9 on all decent compilers
 }
 
+
+/**
+ * When mapping numbers from decimal to binary,
+ * we go from w * 10^q to m * 2^p but we have
+ * 10^q = 5^q * 2^q, so effectively
+ * we are trying to match
+ * w * 2^q * 5^q to m * 2^p. Thus the powers of two
+ * are not a concern since they can be represented
+ * exactly using the binary notation, only the powers of five
+ * affect the binary significand.
+ */ 
 
 // The mantissas of powers of ten from -308 to 308, extended out to sixty four
 // bits. The array contains the powers of ten approximated
