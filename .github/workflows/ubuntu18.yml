@@ -16,5 +16,5 @@ jobs:
           mkdir build &&
           cd build &&
           cmake .. &&
-          cmake --build .  &&
+          cmake --build .  -DFAST_DOUBLE_BENCHMARKS=ON &&
           ctest -j --output-on-failure
