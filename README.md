@@ -29,7 +29,8 @@ the parser will reject overly large values that would not fit in binary64. It wi
 NaN or infinite values.
 
 It works much like the C standard function `strtod` expect that the parsing is locale-independent. E.g., it will parse 0.5 as 1/2, but it will not parse 0,5 as
-1/2 even if you are under a French system. Locale independence is by design (it is not a limitation).
+1/2 even if you are under a French system. Locale independence is by design (it is not a limitation). Like the standard C functions, it expects that the string 
+representation of your number ends with a non-number character (e.g., a null character, a space, a colon, etc.). If you wish the specify the end point of the string, as is common in C++, please consider the [fast_float](https://github.com/lemire/fast_float) C++ library instead.
 
 ## What if I prefer another API?
 
