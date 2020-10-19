@@ -31,6 +31,11 @@ NaN or infinite values.
 It works much like the C standard function `strtod` expect that the parsing is locale-independent. E.g., it will parse 0.5 as 1/2, but it will not parse 0,5 as
 1/2 even if you are under a French system. Locale independence is by design (it is not a limitation).
 
+## What if I prefer another API?
+
+The [fast_float](https://github.com/lemire/fast_float) offers an API resembling that of the C++17 `std::from_chars` functions. In particular, you can specify the beginning and the end of the string.
+
+
 
 ## Why should I expect this function to be faster?
 
