@@ -51,11 +51,12 @@ void check(double d) {
   auto written = std::snprintf(&s[0], s.size(), "%.*e", DBL_DIG + 1, d);
   s.resize(written);
   double x;
-  bool isok = fast_double_parser::parse_number(s.data(), &x);
+  const char * isok = fast_double_parser::parse_number(s.data(), &x);
   if (!isok) {
     printf("fast_double_parser refused to parse %s\n", s.c_str());
     throw std::runtime_error("fast_double_parser refused to parse");
   }
+  if(isok != s.data() + s.size()) throw std::runtime_error("does not point at the end");
   if (d != x) {
     std::cerr << "fast_double_parser disagrees" << std::endl;
     printf("fast_double_parser: %.*e\n", DBL_DIG + 1, x);
@@ -224,8 +225,9 @@ void issue23() {
 void issue23_2() {
   std::string a = "5e0012";
   double x;
-  bool ok = fast_double_parser::parse_number(a.c_str(), &x);
+  const char * ok = fast_double_parser::parse_number(a.c_str(), &x);
   if(!ok) throw std::runtime_error("could not parse zero.");
+  if(ok != a.c_str() + a.size()) throw std::runtime_error("does not point at the end.");
   if(x != 5e12) throw std::runtime_error("cannot parse 5e0012.");
   std::cout << "can parse 5e0012" << std::endl;
 }
@@ -237,11 +239,12 @@ inline void Assert(bool Assertion) {
 bool basic_test_64bit(std::string vals, double val) {
   std::cout << " parsing "  << vals << std::endl;
   double result_value;
-  bool ok = fast_double_parser::parse_number(vals.c_str(), & result_value);
+  const char * ok = fast_double_parser::parse_number(vals.c_str(), & result_value);
   if (!ok) {
     std::cerr << " I could not parse " << vals << std::endl;
     return false;
   }
+  if(ok != vals.c_str() + vals.size()) throw std::runtime_error("does not point at the end.");
   if (std::isnan(val)) {
     if (!std::isnan(result_value)) {
       std::cerr << "not nan" << result_value << std::endl;
@@ -304,11 +307,12 @@ int main() {
     double d;
     std::string s = "1e"+std::to_string(p);
     std::cout << "parsing " << s << std::endl;
-    bool isok = fast_double_parser::parse_number(s.data(), &d);
+    const char * isok = fast_double_parser::parse_number(s.c_str(), &d);
     if (!isok) {
       printf("fast_double_parser refused to parse %s\n", s.c_str());
       throw std::runtime_error("fast_double_parser refused to parse");
     }
+    if(isok != s.c_str() + s.size()) throw std::runtime_error("does not point at the end");
     if (d != testing_power_of_ten[p + 307]) {
       std::cerr << "fast_double_parser disagrees" << std::endl;
       printf("fast_double_parser: %.*e\n", DBL_DIG + 1, d);

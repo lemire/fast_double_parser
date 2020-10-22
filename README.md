@@ -1,7 +1,7 @@
 # fast_double_parser
 [![Build Status](https://cloud.drone.io/api/badges/lemire/fast_double_parser/status.svg)](https://cloud.drone.io/lemire/fast_double_parser) [![Build status](https://ci.appveyor.com/api/projects/status/y7215jgem4ggswnj/branch/master?svg=true)](https://ci.appveyor.com/project/lemire/fast-double-parser/branch/master)![VS16-CI](https://github.com/lemire/fast_double_parser/workflows/VS16-CI/badge.svg)![Ubuntu 18.04 CI (GCC 7)](https://github.com/lemire/fast_double_parser/workflows/Ubuntu%2018.04%20CI%20(GCC%207)/badge.svg)![VS16-Ninja-CI](https://github.com/lemire/fast_double_parser/workflows/VS16-Ninja-CI/badge.svg)![MSYS2-CI](https://github.com/lemire/fast_double_parser/workflows/MSYS2-CI/badge.svg)![VS16-CLANG-CI](https://github.com/lemire/fast_double_parser/workflows/VS16-CLANG-CI/badge.svg)![MinGW32-CI](https://github.com/lemire/fast_double_parser/workflows/MinGW32-CI/badge.svg)![MinGW64-CI](https://github.com/lemire/fast_double_parser/workflows/MinGW64-CI/badge.svg)![Ubuntu 20.04 CI (GCC 9)](https://github.com/lemire/fast_double_parser/workflows/Ubuntu%2020.04%20CI%20(GCC%209)/badge.svg)[![Build Status](https://api.cirrus-ci.com/github/lemire/fast_double_parser.svg)](https://cirrus-ci.com/github/lemire/fast_double_parser)
 
-Fast function to parse strings containing decimal numbers into double-precision (binary64) floating-point values.  That is, given the string "1.0e10", it should return a 64-bit floating-point value equal to 10000000000. We do not sacrifice accuracy. The function will match exactly (down the smallest bit) the result of a standard function like strtod.
+Fast function to parse strings containing decimal numbers into double-precision (binary64) floating-point values.  That is, given the string "1.0e10", it should return a 64-bit floating-point value equal to 10000000000. We do not sacrifice accuracy. The function will match exactly (down the smallest bit) the result of a standard function like `strtod`.
 
 We support all major compilers: Visual Studio, GNU GCC, LLVM Clang. We require C++11.
 
@@ -21,7 +21,10 @@ char * string = ...
 bool isok = fast_double_parser::parse_number(string, &x);
 ```
 
-You must check the value of the boolean (`isok`): if it is false, then the function refused to parse the input.
+You must check the value returned (`isok`): if it is `nullptr`, then the function refused to parse the input.
+Otherwise, we return a pointer (`const char *`) to the end of the parsed string. The provided 
+pointer (`string`) should point at the beginning of the number: if you must skip whitespace characters, 
+it is your responsability to do so.
 
 
 We expect string numbers to follow [RFC 7159](https://tools.ietf.org/html/rfc7159) (JSON standard). In particular,
@@ -30,13 +33,12 @@ NaN or infinite values.
 
 It works much like the C standard function `strtod` expect that the parsing is locale-independent. E.g., it will parse 0.5 as 1/2, but it will not parse 0,5 as
 1/2 even if you are under a French system. Locale independence is by design (it is not a limitation). Like the standard C functions, it expects that the string 
-representation of your number ends with a non-number character (e.g., a null character, a space, a colon, etc.). If you wish the specify the end point of the string, as is common in C++, please consider the [fast_float](https://github.com/lemire/fast_float) C++ library instead.
+representation of your number ends with a non-number character (e.g., a null character, a space, a colon, etc.). If you wish the specify the end point of the string, as is common in C++, please consider the [fast_float](https://github.com/lemire/fast_float) C++ library instead. 
 
 ## What if I prefer another API?
 
 The [fast_float](https://github.com/lemire/fast_float) offers an API resembling that of the C++17 `std::from_chars` functions. In particular, you can specify the beginning and the end of the string.
-
-
+Furthermore [fast_float](https://github.com/lemire/fast_float) supports both 32-bit and 64-bit floating-point numbers. The  [fast_float](https://github.com/lemire/fast_float) library is part of Apache Arrow.
 
 ## Why should I expect this function to be faster?
 
