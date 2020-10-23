@@ -1,9 +1,13 @@
 # fast_double_parser
 [![Build Status](https://cloud.drone.io/api/badges/lemire/fast_double_parser/status.svg)](https://cloud.drone.io/lemire/fast_double_parser) [![Build status](https://ci.appveyor.com/api/projects/status/y7215jgem4ggswnj/branch/master?svg=true)](https://ci.appveyor.com/project/lemire/fast-double-parser/branch/master)![VS16-CI](https://github.com/lemire/fast_double_parser/workflows/VS16-CI/badge.svg)![Ubuntu 18.04 CI (GCC 7)](https://github.com/lemire/fast_double_parser/workflows/Ubuntu%2018.04%20CI%20(GCC%207)/badge.svg)![VS16-Ninja-CI](https://github.com/lemire/fast_double_parser/workflows/VS16-Ninja-CI/badge.svg)![MSYS2-CI](https://github.com/lemire/fast_double_parser/workflows/MSYS2-CI/badge.svg)![VS16-CLANG-CI](https://github.com/lemire/fast_double_parser/workflows/VS16-CLANG-CI/badge.svg)![MinGW32-CI](https://github.com/lemire/fast_double_parser/workflows/MinGW32-CI/badge.svg)![MinGW64-CI](https://github.com/lemire/fast_double_parser/workflows/MinGW64-CI/badge.svg)![Ubuntu 20.04 CI (GCC 9)](https://github.com/lemire/fast_double_parser/workflows/Ubuntu%2020.04%20CI%20(GCC%209)/badge.svg)[![Build Status](https://api.cirrus-ci.com/github/lemire/fast_double_parser.svg)](https://cirrus-ci.com/github/lemire/fast_double_parser)
 
+
 Fast function to parse strings containing decimal numbers into double-precision (binary64) floating-point values.  That is, given the string "1.0e10", it should return a 64-bit floating-point value equal to 10000000000. We do not sacrifice accuracy. The function will match exactly (down the smallest bit) the result of a standard function like `strtod`.
 
 We support all major compilers: Visual Studio, GNU GCC, LLVM Clang. We require C++11.
+
+The core of this library was ported to Go by Nigel Tao and is now a standard float-parsing routine in Go (`strconv.ParseFloat`).
+
 
 ## Usage
 
@@ -136,6 +140,7 @@ double-conv    243.90 MB/s
 
 ## Ports and users
 
+- This library has been ported to Go and integrated in the Go standard library.
 - It part of the database engine [noisepage](https://github.com/cmu-db/noisepage). 
 - The library has been reimplemented in [Google wuffs](https://github.com/google/wuffs/).
 - [There is a Julia port](https://github.com/JuliaData/Parsers.jl).
