@@ -1080,8 +1080,8 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   *success = true;
   return d;
 }
-
-static bool parse_float_strtod(const char *ptr, double *outDouble) {
+// Return the null pointer on error
+static const char * parse_float_strtod(const char *ptr, double *outDouble) {
   char *endptr;
 #if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
   // workround for cygwin
@@ -1105,15 +1105,16 @@ static bool parse_float_strtod(const char *ptr, double *outDouble) {
   // value, we can represent easily the number of atoms in the universe. We
   // could  also represent the number of ways you can pick any three individual
   // atoms at random in the universe.
-  if ((endptr == ptr) || (!std::isfinite(*outDouble))) {
-    return false;
+  if (!std::isfinite(*outDouble)) {
+    return nullptr;
   }
-  return true;
+  return endptr;
 }
 
 // parse the number at p
+// return the null pointer on error
 WARN_UNUSED
-really_inline bool parse_number(const char *p, double *outDouble) {
+really_inline const char * parse_number(const char *p, double *outDouble) {
   const char *pinit = p;
   bool found_minus = (*p == '-');
   bool negative = false;
@@ -1121,7 +1122,7 @@ really_inline bool parse_number(const char *p, double *outDouble) {
     ++p;
     negative = true;
     if (!is_integer(*p)) { // a negative sign must be followed by an integer
-      return false;
+      return nullptr;
     }
   }
   const char *const start_digits = p;
@@ -1130,12 +1131,12 @@ really_inline bool parse_number(const char *p, double *outDouble) {
   if (*p == '0') { // 0 cannot be followed by an integer
     ++p;
     if (is_integer(*p)) {
-      return false;
+      return nullptr;
     }
     i = 0;
   } else {
     if (!(is_integer(*p))) { // must start with an integer
-      return false;
+      return nullptr;
     }
     unsigned char digit = *p - '0';
     i = digit;
@@ -1162,7 +1163,7 @@ really_inline bool parse_number(const char *p, double *outDouble) {
                           // cheaper than arbitrary mult.
       // we will handle the overflow later
     } else {
-      return false;
+      return nullptr;
     }
     while (is_integer(*p)) {
       unsigned char digit = *p - '0';
@@ -1184,7 +1185,7 @@ really_inline bool parse_number(const char *p, double *outDouble) {
       ++p;
     }
     if (!is_integer(*p)) {
-      return false;
+      return nullptr;
     }
     unsigned char digit = *p - '0';
     int64_t exp_number = digit;
@@ -1244,7 +1245,7 @@ really_inline bool parse_number(const char *p, double *outDouble) {
     // we are almost never going to get here.
     return parse_float_strtod(pinit, outDouble);
   }
-  return true;
+  return p;
 }
 
 } // namespace fast_double_parser
