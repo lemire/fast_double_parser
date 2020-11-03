@@ -26,7 +26,9 @@ We have benchmarked our parser on a collection of strings from a sample geojson 
 
 We expect string numbers to follow [RFC 7159](https://tools.ietf.org/html/rfc7159). In particular,
 the parser will reject overly large values that would not fit in binary64. It will not produce
-NaN or infinite values.
+NaN or infinite values. It will refuse to parse `001` or `0.` as these are invalid number strings as
+per the [JSON specification](https://tools.ietf.org/html/rfc7159). Users who prefer a more
+lenient C++ parser may consider the [fast_float](https://github.com/lemire/fast_float) C++ library.
 
 The parsing is locale-independent. E.g., it will parse 0.5 as 1/2, but it will not parse 0,5 as
 1/2 even if you are under a French system.
