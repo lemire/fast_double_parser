@@ -1175,7 +1175,6 @@ really_inline const char * parse_number(const char *p, double *outDouble) {
   }
   int digit_count =
       int(p - start_digits - 1); // used later to guard against overflows
-  int64_t exp_number = 0;   // exponential part
   if (('e' == *p) || ('E' == *p)) {
     ++p;
     bool neg_exp = false;
@@ -1189,7 +1188,7 @@ really_inline const char * parse_number(const char *p, double *outDouble) {
       return nullptr;
     }
     unsigned char digit = *p - '0';
-    exp_number = digit;
+    int64_t exp_number = digit;
     p++;
     if (is_integer(*p)) {
       digit = *p - '0';
