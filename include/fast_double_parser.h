@@ -960,7 +960,10 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // For power in (-400,350), we have that
   // (((152170 + 65536) * power ) >> 16);
   // is equal to
-  //  floor(log(5**power)/log(2)) + power
+  //  floor(log(5**power)/log(2)) + power when power >= 0
+  // and it is equal to
+  //  ceil(log(5**-power)/log(2)) + power when power < 0
+  //
   //
   // The 65536 is (1<<16) and corresponds to 
   // (65536 * power) >> 16 ---> power
