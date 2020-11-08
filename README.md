@@ -26,8 +26,8 @@ bool isok = fast_double_parser::parse_number(string, &x);
 ```
 
 You must check the value returned (`isok`): if it is `nullptr`, then the function refused to parse the input.
-Otherwise, we return a pointer (`const char *`) to the end of the parsed string. The provided 
-pointer (`string`) should point at the beginning of the number: if you must skip whitespace characters, 
+Otherwise, we return a pointer (`const char *`) to the end of the parsed string. The provided
+pointer (`string`) should point at the beginning of the number: if you must skip whitespace characters,
 it is your responsability to do so.
 
 
@@ -36,8 +36,8 @@ the parser will reject overly large values that would not fit in binary64. It wi
 NaN or infinite values.
 
 It works much like the C standard function `strtod` expect that the parsing is locale-independent. E.g., it will parse 0.5 as 1/2, but it will not parse 0,5 as
-1/2 even if you are under a French system. Locale independence is by design (it is not a limitation). Like the standard C functions, it expects that the string 
-representation of your number ends with a non-number character (e.g., a null character, a space, a colon, etc.). If you wish the specify the end point of the string, as is common in C++, please consider the [fast_float](https://github.com/lemire/fast_float) C++ library instead. 
+1/2 even if you are under a French system. Locale independence is by design (it is not a limitation). Like the standard C functions, it expects that the string
+representation of your number ends with a non-number character (e.g., a null character, a space, a colon, etc.). If you wish the specify the end point of the string, as is common in C++, please consider the [fast_float](https://github.com/lemire/fast_float) C++ library instead.
 
 ## What if I prefer another API?
 
@@ -48,7 +48,7 @@ Furthermore [fast_float](https://github.com/lemire/fast_float) supports both 32-
 
 Parsing strings into binary numbers (IEEE 754) is surprisingly difficult. Parsing a single number can take hundreds of instructions and CPU cycles, if not thousands. It is relatively easy to parse numbers faster if you sacrifice accuracy (e.g., tolerate 1 ULP errors), but we are interested in "perfect" parsing.
 
-Instead of trying to solve the general problem, we cover what we believe are the most common scenarios, providing really fast parsing. We fall back on the standard library for the difficult cases. We believe that, in this manner, we achieve the best performance on some of the most important cases. 
+Instead of trying to solve the general problem, we cover what we believe are the most common scenarios, providing really fast parsing. We fall back on the standard library for the difficult cases. We believe that, in this manner, we achieve the best performance on some of the most important cases.
 
 We have benchmarked our parser on a collection of strings from a sample geojson file (canada.json). Here are some of our results:
 
@@ -79,7 +79,7 @@ If you want to run our benchmarks, you should have
 
 - Windows, Linux or macOS; presumably other systems can be supported as well
 - A recent C++ compiler
-- A recent cmake (cmake 3.11 or better) is necessary for the benchmarks 
+- A recent cmake (cmake 3.11 or better) is necessary for the benchmarks
 
 This code falls back on your platform's `strdtod_l` /`_strtod_l` implementation for numbers with a long decimal mantissa (more than 19 digits).
 
@@ -103,7 +103,7 @@ Be mindful that the benchmarks include the abseil library which is not supported
 
 
 ```
-$ ./benchmark 
+$ ./benchmark
 parsing random integers in the range [0,1)
 
 
@@ -127,7 +127,7 @@ double-conv    193.97 MB/s
 
 ```
 $ ./benchmark benchmarks/data/canada.txt
-read 111126 lines 
+read 111126 lines
 
 
 === trial 1 ===
@@ -149,8 +149,12 @@ double-conv    243.90 MB/s
 
 ## Ports and users
 
+<<<<<<< HEAD
+- It part of the database engine [noisepage](https://github.com/cmu-db/noisepage).
+=======
 - This library has been ported to Go and integrated in the Go standard library.
 - It part of the database engine [noisepage](https://github.com/cmu-db/noisepage). 
+>>>>>>> master
 - The library has been reimplemented in [Google wuffs](https://github.com/google/wuffs/).
 - [There is a Julia port](https://github.com/JuliaData/Parsers.jl).
 - [There is a Rust port](https://github.com/ezrosent/frawk/tree/master/src/runtime/float_parse).
@@ -160,3 +164,8 @@ double-conv    243.90 MB/s
 Contributions are invited.
 
 This is based on an original idea by Michael Eisel (joint work).
+
+## License
+
+You may use this code under either the Apache License 2.0 or
+the Boost Software License 1.0.

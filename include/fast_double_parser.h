@@ -22,7 +22,7 @@
 #include <locale>
 #include <sstream>
 // workaround for CYGWIN
-double cygwin_strtod_l(const char* start, char** end) {
+static inline double cygwin_strtod_l(const char* start, char** end) {
     double d;
     std::stringstream ss;
     ss.imbue(std::locale::classic());
@@ -142,7 +142,7 @@ static inline uint64_t _umul128(uint64_t ab, uint64_t cd, uint64_t *hi) {
 
 // We need a backup on old systems.
 // credit: https://stackoverflow.com/questions/28868367/getting-the-high-part-of-64-bit-integer-multiplication
-uint64_t Emulate64x64to128(uint64_t& r_hi, const uint64_t x, const uint64_t y) {
+really_inline uint64_t Emulate64x64to128(uint64_t& r_hi, const uint64_t x, const uint64_t y) {
     const uint64_t x0 = (uint32_t)x, x1 = x >> 32;
     const uint64_t y0 = (uint32_t)y, y1 = y >> 32;
     const uint64_t p11 = x1 * y1, p01 = x0 * y1;
