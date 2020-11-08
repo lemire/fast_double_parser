@@ -12,10 +12,17 @@ option(FAST_DOUBLE_PARSER_SANITIZE "Sanitize addresses" OFF)
 
 set(headers include/fast_double_parser.h)
 set(unit_src tests/unit.cpp)
+set(bogus_src tests/bogus.cpp)
+set(rebogus_src tests/bogus.cpp)
 
 set(benchmark_src benchmarks/benchmark.cpp)
 
-add_executable(unit ${unit_src})
+
+add_library(fast_double_parser INTERFACE)
+target_include_directories(fast_double_parser INTERFACE include/)
+
+
+add_executable(unit ${unit_src} ${bogus_src} ${rebogus_src})
 if(FAST_DOUBLE_PARSER_SANITIZE)
   target_compile_options(unit PUBLIC -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fno-sanitize-recover=all)
   target_link_options(unit PUBLIC -fsanitize=address -fno-omit-frame-pointer -fsanitize=undefined -fno-sanitize-recover=all)
@@ -25,7 +32,10 @@ if(FAST_DOUBLE_PARSER_SANITIZE)
   endif()
 endif()
 
-target_include_directories(unit PUBLIC include)
+target_link_libraries(unit  PUBLIC fast_double_parser)
+
+
+
 enable_testing()
 add_test(unit unit)
 
