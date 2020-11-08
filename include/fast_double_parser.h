@@ -960,7 +960,10 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // For power in (-400,350), we have that
   // (((152170 + 65536) * power ) >> 16);
   // is equal to
-  //  floor(log(5**power)/log(2)) + power
+  //  floor(log(5**power)/log(2)) + power when power >= 0
+  // and it is equal to
+  //  ceil(log(5**-power)/log(2)) + power when power < 0
+  //
   //
   // The 65536 is (1<<16) and corresponds to 
   // (65536 * power) >> 16 ---> power
@@ -1175,7 +1178,6 @@ really_inline const char * parse_number(const char *p, double *outDouble) {
   }
   int digit_count =
       int(p - start_digits - 1); // used later to guard against overflows
-  int64_t exp_number = 0;   // exponential part
   if (('e' == *p) || ('E' == *p)) {
     ++p;
     bool neg_exp = false;
@@ -1189,7 +1191,7 @@ really_inline const char * parse_number(const char *p, double *outDouble) {
       return nullptr;
     }
     unsigned char digit = *p - '0';
-    exp_number = digit;
+    int64_t exp_number = digit;
     p++;
     if (is_integer(*p)) {
       digit = *p - '0';
