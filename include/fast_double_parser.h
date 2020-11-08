@@ -22,7 +22,7 @@
 #include <locale>
 #include <sstream>
 // workaround for CYGWIN
-double cygwin_strtod_l(const char* start, char** end) {
+static inline double cygwin_strtod_l(const char* start, char** end) {
     double d;
     std::stringstream ss;
     ss.imbue(std::locale::classic());
