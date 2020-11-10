@@ -1,0 +1,16 @@
+name: Solaris
+
+on: [push]
+
+jobs:
+  testsolaris:
+    runs-on: macos-latest
+    name: A job to run test Solaris
+    steps:
+    - uses: actions/checkout@v2
+    - name: Test in solaris
+      id: test
+      uses: vmactions/solaris-vm@v0.0.1
+      with:
+        run: |
+          c++ tests/unit.cpp -Iinclude -std=c++11
