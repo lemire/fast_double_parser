@@ -11,12 +11,20 @@
 #include <cstring>
 #include <locale.h>
 
+#if (defined(sun) || defined(__sun)) 
+#define FAST_DOUBLE_PARSER_SOLARIS
+#endif
+
+#if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
+#define FAST_DOUBLE_PARSER_CYGWIN
+#endif
+
 /**
  * Determining whether we should import xlocale.h or not is 
  * a bit of a nightmare.
  */
-#if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
-// Anything at all that is related to cygwin, msys and so forth will
+#if defined(FAST_DOUBLE_PARSER_SOLARIS) || defined(FAST_DOUBLE_PARSER_CYGWIN) 
+// Anything at all that is related to cygwin, msys, solaris and so forth will
 // always use this fallback because we cannot rely on it behaving as normal
 // gcc.
 #include <locale>
@@ -55,7 +63,7 @@ static inline double cygwin_strtod_l(const char* start, char** end) {
 #endif // __has_include
 
 
-#endif //  defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
+#endif //  defined(FAST_DOUBLE_PARSER_SOLARIS) || defined(FAST_DOUBLE_PARSER_CYGWIN) 
 
 
 
@@ -1086,8 +1094,8 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
 // Return the null pointer on error
 static const char * parse_float_strtod(const char *ptr, double *outDouble) {
   char *endptr;
-#if defined(__CYGWIN__) || defined(__MINGW32__) || defined(__MINGW64__) 
-  // workround for cygwin
+#if defined(FAST_DOUBLE_PARSER_SOLARIS) || defined(FAST_DOUBLE_PARSER_CYGWIN) 
+  // workround for cygwin, solaris
   *outDouble = cygwin_strtod_l(ptr, &endptr);
 #elif defined(_WIN32)
   static _locale_t c_locale = _create_locale(LC_ALL, "C");
