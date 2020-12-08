@@ -150,7 +150,8 @@ double-conv    243.90 MB/s
 ## Ports and users
 
 - This library has been ported to Go and integrated in the Go standard library.
-- It part of the database engine [noisepage](https://github.com/cmu-db/noisepage). 
+- It is part of the [Microsoft LightGBM machine-learning framework](https://github.com/microsoft/LightGBM).
+- It is part of the database engine [noisepage](https://github.com/cmu-db/noisepage).
 - The library has been reimplemented in [Google wuffs](https://github.com/google/wuffs/).
 - [There is a Julia port](https://github.com/JuliaData/Parsers.jl).
 - [There is a Rust port](https://github.com/ezrosent/frawk/tree/master/src/runtime/float_parse).
