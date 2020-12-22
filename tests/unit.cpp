@@ -75,7 +75,11 @@ void check_string(std::string s) {
     printf("fast_double_parser refused to parse %s\n", s.c_str());
     throw std::runtime_error("fast_double_parser refused to parse");
   }
-#ifdef _WIN32
+#if defined(FAST_DOUBLE_PARSER_SOLARIS) || defined(FAST_DOUBLE_PARSER_CYGWIN) 
+  // workround for cygwin, solaris
+  char *endptr;
+  double d = cygwin_strtod_l(s.data(), &endptr);
+#elif defined(_WIN32)
   static _locale_t c_locale = _create_locale(LC_ALL, "C");
   double d = _strtod_l(s.data(), nullptr, c_locale);
 #else
@@ -253,7 +257,11 @@ bool basic_test_64bit(std::string vals, double val) {
     std::cerr << " I could not parse " << vals << std::endl;
     return false;
   }
-  if(ok != vals.c_str() + vals.size()) throw std::runtime_error("does not point at the end.");
+  if(ok != vals.c_str() + vals.size()) {
+    std::cout << "gap is " << (ok - vals.c_str()) << std::endl;
+    throw std::runtime_error("does not point at the end.");
+
+  }   
   if (std::isnan(val)) {
     if (!std::isnan(result_value)) {
       std::cerr << "not nan" << result_value << std::endl;
@@ -271,6 +279,7 @@ bool basic_test_64bit(std::string vals, double val) {
 
   return true;
 }
+
 int main() {
   const int evl_method = FLT_EVAL_METHOD;
   printf("FLT_EVAL_METHOD = %d\n", evl_method);

@@ -10,7 +10,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <locale.h>
-
 #if (defined(sun) || defined(__sun)) 
 #define FAST_DOUBLE_PARSER_SOLARIS
 #endif
@@ -36,7 +35,9 @@ static inline double cygwin_strtod_l(const char* start, char** end) {
     ss.imbue(std::locale::classic());
     ss << start;
     ss >> d;
-    size_t nread = ss.tellg();
+    if(ss.fail()) { *end = nullptr; }
+    if(ss.eof()) { ss.clear(); }
+    auto nread = ss.tellg();
     *end = const_cast<char*>(start) + nread;
     return d;
 }
