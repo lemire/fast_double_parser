@@ -9,6 +9,11 @@ We support all major compilers: Visual Studio, GNU GCC, LLVM Clang. We require C
 The core of this library was ported to Go by Nigel Tao and is now a standard float-parsing routine in Go (`strconv.ParseFloat`).
 
 
+## Reference
+
+- Daniel Lemire, [Number Parsing at a Gigabyte per Second](https://arxiv.org/abs/2101.11408), arXiv:2101.11408
+
+
 ## Usage
 
 You should be able to just drop  the header file into your project, it is a header-only library.
