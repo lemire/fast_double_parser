@@ -944,7 +944,7 @@ really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
   // In the slow path, we need to adjust i so that it is > 1<<63 which is always
   // possible, except if i == 0, so we handle i == 0 separately.
   if(i == 0) {
-    return 0.0;
+    return negative ? -0.0 : 0.0;
   }
 
 

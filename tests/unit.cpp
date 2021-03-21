@@ -226,6 +226,24 @@ void issue32() {
   std::cout << "zero maps to zero" << std::endl;
 }
 
+void issue50_fastpath() {
+  std::string a = "-0.0";
+  double x;
+  bool ok = fast_double_parser::parse_number(a.c_str(), &x);
+  if(!ok) throw std::runtime_error("could not parse -0.0");
+  if(!std::signbit(x)) throw std::runtime_error("-0.0 signbit is positive");
+  std::cout << "-0.0 signbit is negative" << std::endl;
+}
+
+void issue50_off_fastpath() {
+  std::string a = "-0.0e-22";
+  double x;
+  bool ok = fast_double_parser::parse_number(a.c_str(), &x);
+  if(!ok) throw std::runtime_error("could not parse -0.0-22");
+  if(!std::signbit(x)) throw std::runtime_error("-0.0-22 signbit is positive");
+  std::cout << "-0.0-22 signbit is negative" << std::endl;
+}
+
 void issue23() {
   std::string a = "0e+42949672970";
   double x;
@@ -297,6 +315,8 @@ int main() {
   issue40();
   issue23();
   issue32();
+  issue50_fastpath();
+  issue50_off_fastpath();
   issue23_2();
   unit_tests();
   for (int p = -306; p <= 308; p++) {
