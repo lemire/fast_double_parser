@@ -27,10 +27,10 @@ The current API is simple enough:
 
 double x;
 char * string = ...
-bool isok = fast_double_parser::parse_number(string, &x);
+const char * endptr = fast_double_parser::parse_number(string, &x);
 ```
 
-You must check the value returned (`isok`): if it is `nullptr`, then the function refused to parse the input.
+You must check the value returned (`endptr`): if it is `nullptr`, then the function refused to parse the input.
 Otherwise, we return a pointer (`const char *`) to the end of the parsed string. The provided
 pointer (`string`) should point at the beginning of the number: if you must skip whitespace characters,
 it is your responsability to do so.
