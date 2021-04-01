@@ -206,12 +206,6 @@ inline int leading_zeroes(uint64_t input_num) {
 #endif // _MSC_VER
 }
 
-// Precomputed powers of ten from 10^0 to 10^22. These
-// can be represented exactly using the double type.
-static const double power_of_ten[] = {
-    1e0,  1e1,  1e2,  1e3,  1e4,  1e5,  1e6,  1e7,  1e8,  1e9,  1e10, 1e11,
-    1e12, 1e13, 1e14, 1e15, 1e16, 1e17, 1e18, 1e19, 1e20, 1e21, 1e22};
-
 static inline bool is_integer(char c) {
   return (c >= '0' && c <= '9');
   // this gets compiled to (uint8_t)(c - '0') <= 9 on all decent compilers
@@ -229,13 +223,28 @@ static inline bool is_integer(char c) {
  * affect the binary significand.
  */ 
 
-// The mantissas of powers of ten from -308 to 308, extended out to sixty four
-// bits. The array contains the powers of ten approximated
-// as a 64-bit mantissa. It goes from 10^FASTFLOAT_SMALLEST_POWER to 
-// 10^FASTFLOAT_LARGEST_POWER (inclusively). 
-// The mantissa is truncated, and
-// never rounded up. Uses about 5KB.
-static const uint64_t mantissa_64[] = {
+// Attempts to compute i * 10^(power) exactly; and if "negative" is
+// true, negate the result.
+// This function will only work in some cases, when it does not work, success is
+// set to false. This should work *most of the time* (like 99% of the time).
+// We assume that power is in the [FASTFLOAT_SMALLEST_POWER,
+// FASTFLOAT_LARGEST_POWER] interval: the caller is responsible for this check.
+really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
+                                      bool *success) {
+
+  // Precomputed powers of ten from 10^0 to 10^22. These
+  // can be represented exactly using the double type.
+  static const double power_of_ten[] = {
+      1e0,  1e1,  1e2,  1e3,  1e4,  1e5,  1e6,  1e7,  1e8,  1e9,  1e10, 1e11,
+      1e12, 1e13, 1e14, 1e15, 1e16, 1e17, 1e18, 1e19, 1e20, 1e21, 1e22};
+
+  // The mantissas of powers of ten from -308 to 308, extended out to sixty four
+  // bits. The array contains the powers of ten approximated
+  // as a 64-bit mantissa. It goes from 10^FASTFLOAT_SMALLEST_POWER to
+  // 10^FASTFLOAT_LARGEST_POWER (inclusively).
+  // The mantissa is truncated, and
+  // never rounded up. Uses about 5KB.
+  static const uint64_t mantissa_64[] = {
     0xa5ced43b7e3e9188, 0xcf42894a5dce35ea,
     0x818995ce7aa0e1b2, 0xa1ebfb4219491a1f,
     0xca66fa129f9b60a6, 0xfd00b897478238d0,
@@ -553,10 +562,10 @@ static const uint64_t mantissa_64[] = {
     0xbaa718e68396cffd, 0xe950df20247c83fd,
     0x91d28b7416cdd27e, 0xb6472e511c81471d,
     0xe3d8f9e563a198e5, 0x8e679c2f5e44ff8f};
-// A complement to mantissa_64
-// complete to a 128-bit mantissa.
-// Uses about 5KB but is rarely accessed.
-const uint64_t mantissa_128[] = {
+  // A complement to mantissa_64
+  // complete to a 128-bit mantissa.
+  // Uses about 5KB but is rarely accessed.
+  static const uint64_t mantissa_128[] = {
     0x419ea3bd35385e2d, 0x52064cac828675b9,
     0x7343efebd1940993, 0x1014ebe6c5f90bf8,
     0xd41a26e077774ef6, 0x8920b098955522b4,
@@ -874,16 +883,6 @@ const uint64_t mantissa_128[] = {
     0xd30560258f54e6ba, 0x47c6b82ef32a2069,
     0x4cdc331d57fa5441, 0xe0133fe4adf8e952,
     0x58180fddd97723a6, 0x570f09eaa7ea7648,};
-
-
-// Attempts to compute i * 10^(power) exactly; and if "negative" is
-// true, negate the result.
-// This function will only work in some cases, when it does not work, success is
-// set to false. This should work *most of the time* (like 99% of the time).
-// We assume that power is in the [FASTFLOAT_SMALLEST_POWER,
-// FASTFLOAT_LARGEST_POWER] interval: the caller is responsible for this check.
-really_inline double compute_float_64(int64_t power, uint64_t i, bool negative,
-                                      bool *success) {
 
   // we start with a fast path
   // It was described in
