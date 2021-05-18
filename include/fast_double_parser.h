@@ -190,10 +190,10 @@ really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
   return answer;
 }
 
-
 /* result might be undefined when input_num is zero */
 inline int leading_zeroes(uint64_t input_num) {
 #ifdef _MSC_VER
+#if defined(_M_X64) || defined(_M_ARM64) || defined (_M_IA64)
   unsigned long leading_zero = 0;
   // Search the mask data from most significant bit (MSB)
   // to least significant bit (LSB) for a set bit (1).
@@ -201,6 +201,12 @@ inline int leading_zeroes(uint64_t input_num) {
     return (int)(63 - leading_zero);
   else
     return 64;
+#else
+  unsigned long x1 = (unsigned long)(x >> 32), top, bottom;
+  _BitScanReverse(&top, x1);
+  _BitScanReverse(&bottom, (unsigned long)x);
+  return x1 ? top + 32 : bottom;
+#endif // defined(_M_X64) || defined(_M_ARM64) || defined (_M_IA64)
 #else
   return __builtin_clzll(input_num);
 #endif // _MSC_VER
