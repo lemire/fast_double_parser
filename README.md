@@ -11,7 +11,8 @@ The core of this library was ported to Go by Nigel Tao and is now a standard flo
 
 ## Reference
 
-- Daniel Lemire, [Number Parsing at a Gigabyte per Second](https://arxiv.org/abs/2101.11408), , Software: Pratice and Experience (to appear)
+- Daniel Lemire, [Number Parsing at a Gigabyte per Second](https://arxiv.org/abs/2101.11408), Software: Practice and Experience 51 (8), 2021.
+
 
 
 ## Usage
