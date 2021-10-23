@@ -155,6 +155,7 @@ double-conv    243.90 MB/s
 
 ## Ports and users
 
+- The algorithm is part of the [LLVM standard libraries](https://github.com/llvm/llvm-project/commit/87c016078ad72c46505461e4ff8bfa04819fe7ba). 
 - This library has been ported to Go and integrated in the Go standard library.
 - It is part of the [Microsoft LightGBM machine-learning framework](https://github.com/microsoft/LightGBM).
 - It is part of the database engine [noisepage](https://github.com/cmu-db/noisepage).
