@@ -202,9 +202,9 @@ inline int leading_zeroes(uint64_t input_num) {
   else
     return 64;
 #else
-  unsigned long x1 = (unsigned long)(x >> 32), top, bottom;
+  unsigned long x1 = (unsigned long)(input_num >> 32), top, bottom;
   _BitScanReverse(&top, x1);
-  _BitScanReverse(&bottom, (unsigned long)x);
+  _BitScanReverse(&bottom, (unsigned long)input_num);
   return x1 ? top + 32 : bottom;
 #endif // defined(_M_X64) || defined(_M_ARM64) || defined (_M_IA64)
 #else
