@@ -8,6 +8,8 @@ We support all major compilers: Visual Studio, GNU GCC, LLVM Clang. We require C
 
 The core of this library was ported to Go by Nigel Tao and is now a standard float-parsing routine in Go (`strconv.ParseFloat`).
 
+**We encourage users to adopt [fast_float](https://github.com/fastfloat/fast_float) library instead. It has more functionality and greater speed in some cases.**
+
 
 ## Reference
 
