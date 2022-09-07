@@ -1184,6 +1184,10 @@ really_inline const char * parse_number(const char *p, double *outDouble) {
                           // cheaper than arbitrary mult.
       // we will handle the overflow later
     } else {
+      if (*p == '\0') {
+        *outDouble = 0;
+        return p;
+      }
       return nullptr;
     }
     while (is_integer(*p)) {
