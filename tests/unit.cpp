@@ -226,6 +226,16 @@ void issue32() {
   std::cout << "zero maps to zero" << std::endl;
 }
 
+void negative_subsubnormal_to_negative_zero() {
+  std::string a = "-1e-999";
+  double x;
+  bool ok = fast_double_parser::parse_number(a.c_str(), &x);
+  if(!ok) throw std::runtime_error("could not parse -1e-999");
+  if(!std::signbit(x)) throw std::runtime_error("-1e-999 signbit is positive");
+  if(x != -0) throw std::runtime_error("-1e-999 is not -0");
+  std::cout << "-1e-999 parses to -0" << std::endl;
+}
+
 void issue50_fastpath() {
   std::string a = "-0.0";
   double x;
@@ -234,6 +244,7 @@ void issue50_fastpath() {
   if(!std::signbit(x)) throw std::runtime_error("-0.0 signbit is positive");
   std::cout << "-0.0 signbit is negative" << std::endl;
 }
+
 
 void issue50_off_fastpath() {
   std::string a = "-0.0e-22";
@@ -373,6 +384,7 @@ int main() {
       throw std::runtime_error("fast_double_parser disagrees");
     }
   }
+  negative_subsubnormal_to_negative_zero();
   std::cout << std::endl;
   std::cout << "All ok" << std::endl;
   printf("Good!\n");
