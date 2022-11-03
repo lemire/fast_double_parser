@@ -6,7 +6,10 @@ Fast function to parse ASCII strings containing decimal numbers into double-prec
 
 We support all major compilers: Visual Studio, GNU GCC, LLVM Clang. We require C++11.
 
-The core of this library was ported to Go by Nigel Tao and is now a standard float-parsing routine in Go (`strconv.ParseFloat`).
+The core of this library was ported to Go by Nigel Tao and is now a standard float-parsing routine in Go (`strconv.ParseFloat`). 
+
+
+
 
 **We encourage users to adopt [fast_float](https://github.com/fastfloat/fast_float) library instead. It has more functionality and greater speed in some cases.**
 
@@ -46,6 +49,9 @@ NaN or infinite values.
 It works much like the C standard function `strtod` expect that the parsing is locale-independent. E.g., it will parse 0.5 as 1/2, but it will not parse 0,5 as
 1/2 even if you are under a French system. Locale independence is by design (it is not a limitation). Like the standard C functions, it expects that the string
 representation of your number ends with a non-number character (e.g., a null character, a space, a colon, etc.). If you wish the specify the end point of the string, as is common in C++, please consider the [fast_float](https://github.com/lemire/fast_float) C++ library instead.
+
+
+We assume that the rounding mode is set to nearest, the default setting (`std::fegetround() == FE_TONEAREST`). It is uncommon to have a different setting.
 
 ## What if I prefer another API?
 
