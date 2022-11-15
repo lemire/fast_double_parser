@@ -39,7 +39,7 @@ const char * endptr = fast_double_parser::parse_number(string, &x);
 You must check the value returned (`endptr`): if it is `nullptr`, then the function refused to parse the input.
 Otherwise, we return a pointer (`const char *`) to the end of the parsed string. The provided
 pointer (`string`) should point at the beginning of the number: if you must skip whitespace characters,
-it is your responsability to do so.
+it is your responsibility to do so.
 
 
 We expect string numbers to follow [RFC 7159](https://tools.ietf.org/html/rfc7159) (JSON standard). In particular,
