@@ -1111,8 +1111,12 @@ static const char * parse_float_strtod(const char *ptr, double *outDouble) {
   static _locale_t c_locale = _create_locale(LC_ALL, "C");
   *outDouble = _strtod_l(ptr, &endptr, c_locale);
 #else
+#if defined(__PASE__)
+  *outDouble = strtod(ptr, &endptr);
+#else
   static locale_t c_locale = newlocale(LC_ALL_MASK, "C", NULL);
   *outDouble = strtod_l(ptr, &endptr, c_locale);
+#endif
 #endif
   // Some libraries will set errno = ERANGE when the value is subnormal,
   // yet we may want to be able to parse subnormal values.
