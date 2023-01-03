@@ -193,24 +193,18 @@ really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
 /* result might be undefined when input_num is zero */
 inline int leading_zeroes(uint64_t input_num) {
 #ifdef _MSC_VER
-#if defined(_M_X64) || defined(_M_ARM64) || defined (_M_IA64)
   unsigned long leading_zero = 0;
   // Search the mask data from most significant bit (MSB)
   // to least significant bit (LSB) for a set bit (1).
+#ifdef _WIN64
   if (_BitScanReverse64(&leading_zero, input_num))
     return (int)(63 - leading_zero);
-  else
-    return 64;
 #else
-  int last_bit = 0;
-  if(input_num & uint64_t(0xffffffff00000000)) input_num >>= 32, last_bit |= 32;
-  if(input_num & uint64_t(        0xffff0000)) input_num >>= 16, last_bit |= 16;
-  if(input_num & uint64_t(            0xff00)) input_num >>=  8, last_bit |=  8;
-  if(input_num & uint64_t(              0xf0)) input_num >>=  4, last_bit |=  4;
-  if(input_num & uint64_t(               0xc)) input_num >>=  2, last_bit |=  2;
-  if(input_num & uint64_t(               0x2)) input_num >>=  1, last_bit |=  1;
-  return 63 - last_bit;
-#endif // defined(_M_X64) || defined(_M_ARM64) || defined (_M_IA64)
+  if (_BitScanReverse(&leading_zero, (uint32_t)(input_num >> 32)))
+    return (int)(63 - (leading_zero + 32));
+  if (_BitScanReverse(&leading_zero, (uint32_t)input_num))
+    return (int)(63 - leading_zero);
+#endif // _WIN64
 #else
   return __builtin_clzll(input_num);
 #endif // _MSC_VER
