@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.4
+        uses: jwlawson/actions-setup-cmake@v1.13
         with:
           cmake-version: '3.9.x'
       - name: Use cmake
