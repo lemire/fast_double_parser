@@ -284,6 +284,15 @@ void issue63() {
   std::cout << "1-4-abc" << std::endl;
 }
 
+void issue2093() {
+  std::string a = "0.95000000000000000000";
+  double x;
+  const char * ok = fast_double_parser::parse_number(a.c_str(), &x);
+  if(!ok) throw std::runtime_error("0.95000000000000000000");
+  if(x != 0.95) throw std::runtime_error("cannot parse 0.95000000000000000000.");
+  std::cout << "0.95000000000000000000" << std::endl;
+}
+
 
 
 inline void Assert(bool Assertion) {
@@ -330,6 +339,7 @@ int main() {
     printf("Aborting further tests.");
     return EXIT_SUCCESS;
   } 
+  issue2093();
   Assert(basic_test_64bit("1090544144181609348835077142190",0x1.b8779f2474dfbp+99));
   Assert(basic_test_64bit("4503599627370496.5", 4503599627370496.5));
   Assert(basic_test_64bit("4503599627370497.5", 4503599627370497.5));
