@@ -1,3 +1,5 @@
+**Deprecated; We encourage users to adopt [fast_float](https://github.com/fastfloat/fast_float) library instead. It has more functionality and greater speed in some cases.**
+
 # fast_double_parser: 4x faster than strtod
 ![Ubuntu 18.04 CI (GCC 7)](https://github.com/lemire/fast_double_parser/workflows/Ubuntu%2018.04%20CI%20(GCC%207)/badge.svg)![MSYS2-CI](https://github.com/lemire/fast_double_parser/workflows/MSYS2-CI/badge.svg)![Ubuntu 20.04 CI (GCC 9)](https://github.com/lemire/fast_double_parser/workflows/Ubuntu%2020.04%20CI%20(GCC%209)/badge.svg)[![Build Status](https://api.cirrus-ci.com/github/lemire/fast_double_parser.svg)](https://cirrus-ci.com/github/lemire/fast_double_parser)
 
@@ -7,11 +9,6 @@ Fast function to parse ASCII strings containing decimal numbers into double-prec
 We support all major compilers: Visual Studio, GNU GCC, LLVM Clang. We require C++11.
 
 The core of this library was ported to Go by Nigel Tao and is now a standard float-parsing routine in Go (`strconv.ParseFloat`). 
-
-
-
-
-**We encourage users to adopt [fast_float](https://github.com/fastfloat/fast_float) library instead. It has more functionality and greater speed in some cases.**
 
 
 ## Reference
