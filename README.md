@@ -53,7 +53,7 @@ We assume that the rounding mode is set to nearest, the default setting (`std::f
 ## What if I prefer another API?
 
 The [fast_float](https://github.com/lemire/fast_float) offers an API resembling that of the C++17 `std::from_chars` functions. In particular, you can specify the beginning and the end of the string.
-Furthermore [fast_float](https://github.com/lemire/fast_float) supports both 32-bit and 64-bit floating-point numbers. The  [fast_float](https://github.com/lemire/fast_float) library is part of Apache Arrow.
+Furthermore [fast_float](https://github.com/lemire/fast_float) supports both 32-bit and 64-bit floating-point numbers. The  [fast_float](https://github.com/lemire/fast_float) library is part of Apache Arrow, GCC 12, Safari/WebKit and other important systems.
 
 ## Why should I expect this function to be faster?
 
