@@ -1,7 +1,7 @@
-**Deprecated; We encourage users to adopt [fast_float](https://github.com/fastfloat/fast_float) library instead. It has more functionality and greater speed in some cases.**
-
 # fast_double_parser: 4x faster than strtod
 ![Ubuntu 18.04 CI (GCC 7)](https://github.com/lemire/fast_double_parser/workflows/Ubuntu%2018.04%20CI%20(GCC%207)/badge.svg)![MSYS2-CI](https://github.com/lemire/fast_double_parser/workflows/MSYS2-CI/badge.svg)![Ubuntu 20.04 CI (GCC 9)](https://github.com/lemire/fast_double_parser/workflows/Ubuntu%2020.04%20CI%20(GCC%209)/badge.svg)[![Build Status](https://api.cirrus-ci.com/github/lemire/fast_double_parser.svg)](https://cirrus-ci.com/github/lemire/fast_double_parser)
+
+Unless you need support for [RFC 7159](https://tools.ietf.org/html/rfc7159) (JSON standard), we encourage users to adopt [fast_float](https://github.com/fastfloat/fast_float) library instead. It has more functionality.
 
 
 Fast function to parse ASCII strings containing decimal numbers into double-precision (binary64) floating-point values.  That is, given the string "1.0e10", it should return a 64-bit floating-point value equal to 10000000000. We do not sacrifice accuracy. The function will match exactly (down the smallest bit) the result of a standard function like `strtod`.
