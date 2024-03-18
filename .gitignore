@@ -44,3 +44,7 @@
 /fast_double_parser.cxxflags
 /fast_double_parser.files
 /fast_double_parser.includes
+
+# Visual Studio
+/.vs
+/out
