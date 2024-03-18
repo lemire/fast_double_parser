@@ -19,7 +19,7 @@ set(rebogus_src tests/bogus.cpp)
 set(benchmark_src benchmarks/benchmark.cpp)
 
 
-add_library(fast_double_parser INTERFACE ${headers})
+add_library(fast_double_parser INTERFACE)
 target_include_directories(fast_double_parser
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
