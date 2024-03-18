@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "double-conversion/ieee.h"
-#include "double-conversion/string-to-double.h"
+#include "double-conversion/double-conversion.h"
 
 double findmax_fast_double_parser(const std::vector<std::string>& s) {
   double answer = 0;

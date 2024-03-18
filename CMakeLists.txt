@@ -66,27 +66,36 @@ endif()
 
 option(FAST_DOUBLE_BENCHMARKS "include benchmarks" OFF)
 
-function(initialize_submodule DIRECTORY)
-  if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}/.git)
-    find_package(Git QUIET REQUIRED)
-    message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}/.git does not exist. Initializing ${DIRECTORY} submodule ...")
-    execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init ${CMAKE_CURRENT_SOURCE_DIR}/${DIRECTORY}
-                    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-                    RESULT_VARIABLE GIT_EXIT_CODE)
-    if(NOT GIT_EXIT_CODE EQUAL "0")
-      message(FATAL_ERROR "${GIT_EXECUTABLE} submodule update --init dependencies/${DIRECTORY} failed with exit code ${GIT_EXIT_CODE}, please checkout submodules")
-    endif()
-  endif()
-endfunction(initialize_submodule)
+
 
 if(FAST_DOUBLE_BENCHMARKS)
-  initialize_submodule(benchmarks/dependencies/abseil-cpp)
-  initialize_submodule(benchmarks/dependencies/double-conversion)
 
-  add_subdirectory(benchmarks/dependencies/abseil-cpp)
-  add_subdirectory(benchmarks/dependencies/double-conversion)
+    include(FetchContent)
+    include(ExternalProject)
 
-  add_executable(benchmark ${benchmark_src})
-  target_link_libraries(benchmark PUBLIC double-conversion absl_strings)
-  target_include_directories(benchmark PUBLIC include)
+    set(ABSL_ENABLE_INSTALL ON)
+    set(ABSL_RUN_TEST OFF CACHE INTERNAL "")
+    set(ABSL_USE_GOOGLETEST_HEAD OFF CACHE INTERNAL "")
+
+    FetchContent_Declare(abseil 
+         GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git 
+         GIT_TAG "20210324.2")
+    FetchContent_GetProperties(abseil)
+    if(NOT abseil_POPULATED)
+        set(BUILD_TESTING OFF)
+        FetchContent_Populate(abseil)
+        add_subdirectory(${abseil_SOURCE_DIR} ${abseil_BINARY_DIR})
+        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${abseil_SOURCE_DIR}/absl/copts)
+        include(${abseil_SOURCE_DIR}/absl/copts/AbseilConfigureCopts.cmake)
+    endif()
+
+    FetchContent_Declare(doubleconversion 
+        GIT_REPOSITORY https://github.com/google/double-conversion.git 
+        GIT_TAG "v3.1.5")
+    FetchContent_GetProperties(doubleconversion)
+    FetchContent_MakeAvailable(doubleconversion)
+
+    add_executable(benchmark ${benchmark_src})
+    target_link_libraries(benchmark PUBLIC double-conversion absl::strings)
+    target_include_directories(benchmark PUBLIC include)
 endif(FAST_DOUBLE_BENCHMARKS)
