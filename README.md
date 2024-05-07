@@ -1,5 +1,5 @@
 # fast_double_parser: 4x faster than strtod
-![Ubuntu 18.04 CI (GCC 7)](https://github.com/lemire/fast_double_parser/workflows/Ubuntu%2018.04%20CI%20(GCC%207)/badge.svg)![MSYS2-CI](https://github.com/lemire/fast_double_parser/workflows/MSYS2-CI/badge.svg)![Ubuntu 20.04 CI (GCC 9)](https://github.com/lemire/fast_double_parser/workflows/Ubuntu%2020.04%20CI%20(GCC%209)/badge.svg)[![Build Status](https://api.cirrus-ci.com/github/lemire/fast_double_parser.svg)](https://cirrus-ci.com/github/lemire/fast_double_parser)
+![MSYS2-CI](https://github.com/lemire/fast_double_parser/workflows/MSYS2-CI/badge.svg)[![Ubuntu 22.04](https://github.com/lemire/fast_double_parser/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/lemire/fast_double_parser/actions/workflows/ubuntu.yml)
 
 Unless you need support for [RFC 7159](https://tools.ietf.org/html/rfc7159) (JSON standard), we encourage users to adopt [fast_float](https://github.com/fastfloat/fast_float) library instead. It has more functionality.
 
