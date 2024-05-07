@@ -1,16 +1,15 @@
-name: Ubuntu 20.04 CI (GCC 9)
+name: Ubuntu 22.04
 
 on: [push, pull_request]
 
 jobs:
   ubuntu-build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        cxx: [g++-12, clang++-14]
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.13
-        with:
-          cmake-version: '3.11.x'
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
       - name: Use cmake
         run: |
           mkdir build &&
