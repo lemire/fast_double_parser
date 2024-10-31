@@ -5,3 +5,6 @@ module(
     version = "0.8.0",
     compatibility_level = 0,
 )
+
+bazel_dep(name = "abseil-cpp", version = "20240722.0", dev_dependency = True)
+bazel_dep(name = "double-conversion", version = "3.3.0", dev_dependency = True)
