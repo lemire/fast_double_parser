@@ -10,3 +10,13 @@ cc_test(
     srcs = ["tests/unit.cpp"],
     deps = [":fast_double_parser"],
 )
+
+cc_binary(
+    name = "benchmark",
+    srcs = ["benchmarks/benchmark.cpp"],
+    deps = [
+        ":fast_double_parser",
+        "@abseil-cpp//absl/strings",
+        "@double-conversion",
+    ],
+)
