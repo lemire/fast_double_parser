@@ -169,6 +169,7 @@ double-conv    243.90 MB/s
 - [There is a Rust port](https://github.com/ezrosent/frawk/tree/master/src/runtime/float_parse).
 - [There is a Java port](https://github.com/wrandelshofer/FastDoubleParser).
 - [There is a C# port](https://github.com/CarlVerret/csFastFloat).
+- [Bazel Central Registry](https://registry.bazel.build/modules/fast_double_parser).
 
 ## Credit
 
