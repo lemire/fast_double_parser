@@ -1,0 +1,7 @@
+"""fast_double_parser: 4x faster than strtod."""
+
+module(
+    name = "fast_double_parser",
+    version = "0.8.0",
+    compatibility_level = 0,
+)

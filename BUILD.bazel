@@ -1,0 +1,12 @@
+cc_library(
+    name = "fast_double_parser",
+    hdrs = ["include/fast_double_parser.h"],
+    strip_include_prefix = "include",
+    visibility = ["//visibility:public"],
+)
+
+cc_test(
+    name = "unit",
+    srcs = ["tests/unit.cpp"],
+    deps = [":fast_double_parser"],
+)
