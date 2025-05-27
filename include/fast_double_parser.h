@@ -197,13 +197,19 @@ inline int leading_zeroes(uint64_t input_num) {
   // Search the mask data from most significant bit (MSB)
   // to least significant bit (LSB) for a set bit (1).
 #ifdef _WIN64
-  if (_BitScanReverse64(&leading_zero, input_num))
-    return (int)(63 - leading_zero);
+  // To avoid warnings, let us force a return. Note that
+  // input_num is non-zero by assumption.
+  (void)_BitScanReverse64(&leading_zero, input_num);
+  return (int)(63 - leading_zero);
 #else
-  if (_BitScanReverse(&leading_zero, (uint32_t)(input_num >> 32)))
+  // To avoid warnings, let us force a return. Note that
+  // input_num is non-zero by assumption.
+  if (input_num >> 32) {
+   (void)_BitScanReverse(&leading_zero, (uint32_t)(input_num >> 32));
     return (int)(63 - (leading_zero + 32));
-  if (_BitScanReverse(&leading_zero, (uint32_t)input_num))
-    return (int)(63 - leading_zero);
+  }
+  (void)_BitScanReverse(&leading_zero, (uint32_t)input_num);
+  return (int)(63 - leading_zero);
 #endif // _WIN64
 #else
   return __builtin_clzll(input_num);
