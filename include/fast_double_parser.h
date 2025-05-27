@@ -191,7 +191,7 @@ really_inline value128 full_multiplication(uint64_t value1, uint64_t value2) {
 }
 
 /* result might be undefined when input_num is zero */
-int leading_zeroes(uint64_t input_num) {
+inline int leading_zeroes(uint64_t input_num) {
 #ifdef _MSC_VER
   unsigned long leading_zero = 0;
   // Search the mask data from most significant bit (MSB)
