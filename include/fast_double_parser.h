@@ -199,13 +199,18 @@ inline int leading_zeroes(uint64_t input_num) {
 #ifdef _WIN64
   if (_BitScanReverse64(&leading_zero, input_num))
     return (int)(63 - leading_zero);
-#else
+#ifndef _M_ARM64
+  return __lzcnt64(input_num);
+#endif // _M_ARM64
+
+#else // _WIN64
   if (_BitScanReverse(&leading_zero, (uint32_t)(input_num >> 32)))
     return (int)(63 - (leading_zero + 32));
   if (_BitScanReverse(&leading_zero, (uint32_t)input_num))
     return (int)(63 - leading_zero);
 #endif // _WIN64
-#else
+
+#else // _MSC_VER
   return __builtin_clzll(input_num);
 #endif // _MSC_VER
 }
